@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="w-full h-full min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+<div class="w-[40%] max-w-md bg-white shadow-lg rounded-lg overflow-hidden px-5 py-4">
+  <div class="px-6 py-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-900">Payment Details</h2>
+
+      <button
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 rounded-md transition duration-200">
+        Cancel
+      </button>
+    </div>
+
+    <dl class="divide-y divide-gray-200">
+      <!-- Payer -->
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Payer</dt>
+        <dd class="text-sm text-gray-900">{{ payment.booking.customer.username }}</dd>
+      </div>
+      
+      <!-- Invoice -->
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Invoice</dt>
+        <dd class="text-sm text-gray-900">#{{ payment.id }}</dd>
+      </div>
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Service Price</dt>
+        <dd class="text-sm text-gray-900">{{ payment.booking.service.price }} ₹</dd>
+      </div>
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Platform charge</dt>
+        <dd class="text-sm text-gray-900">5 ₹</dd>
+      </div>
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Transaction charge</dt>
+        <dd class="text-sm text-gray-900">2 ₹</dd>
+      </div>
+
+      <!-- Amount -->
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
+        <dd class="text-sm font-semibold text-gray-900">150.00 ₹</dd>
+      </div>
+
+      <!-- Due Date -->
+      <div class="py-3 flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Due Date</dt>
+        <dd class="text-sm font-semibold text-gray-900">{{ payment.booking.fullfillment_date.date() }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <form id="add-service-form" action="{{ url_for('customer.handle_payment', cust_id=cust_id, payment_id=payment.id) }}" method="post" class="px-6 ">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-4">
+        <div class="col-span-2">
+            {{ form.method.label(for="method", class="block mb-2 text-sm font-medium
+            text-gray-500") }} {{ form.method(id="method", class="bg-white
+            border border-gray-300 text-sm rounded-lg focus:ring-primary-600
+            focus:border-primary-600 block w-full p-2.5", ) }}
+        </div>
+    </div>
+    <div class=" flex gap-5 justify-end">
+        <button
+        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-md transition duration-200">
+        Confirm
+        </button>   
+    </div>
+  </form> 
+
+  
+</div>
+
+
+</div>
+
+{% endblock main_content %}
+
+
+

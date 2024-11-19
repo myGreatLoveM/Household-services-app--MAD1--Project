@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/customer_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+<section class="mx-auto w-full h-full max-w-7xl px-4 py-4">
+{% if payments %}
+<div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+    <div>
+      <h2 class="text-lg font-semibold">Pending payments</h2>
+      <p class="mt-1 text-sm text-gray-700">
+        This is a list of all pending payments for confirmed booking
+      </p>
+    </div>
+
+    <div class="flex items-center gap-10">
+        <div class="relative inline-block text-left">
+            <button id="dropdownButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="true" aria-haspopup="true">
+                Filter by type
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <!-- Dropdown menu, show/hide based on menu state. -->
+            <div id="dropdownMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                <div class="py-1" role="none">
+                    <!-- Active: "bg-gray-100", Not Active: "" -->
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
+  <table class="min-w-full divide-gray-200 bg-white text-sm">
+    <thead class="text-left bg-gray-50 uppercase">
+      <tr class="text-center">
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booking ID</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Provider</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Price</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked</th>
+
+        <th scope="col" class="px-4 py-2">Action</th>
+      </tr>
+    </thead>
+
+
+    <tbody class="divide-y divide-gray-200">
+        {% for payment in payments %}
+            <tr class="odd:bg-white even:bg-gray-50 text-center">
+                <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ payment.booking.id }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.title }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.provider.user.username }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.price }} ₹</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.book_date.date() }}</td>
+
+                <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
+                    <a
+                        href="{{ url_for('customer.go_to_payment_portal', cust_id=cust_id, payment_id=payment.id) }}"
+                        class="inline-block rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
+                    >
+                        Pay
+                    </a>
+                    <a
+                        href="#"
+                        class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700"
+                    >
+                        Cancel
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<div class="w-full border-t border-gray-300 mt-5">
+  <div class="mt-2 flex items-center justify-between">
+    <div>
+      <p>showing results</p>
+    </div>
+    <div class="space-x-2">
+        <button
+        type="button"
+        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+            <a href="#">
+                ← Previous
+            </a>
+        </button>
+        <button
+        type="button"
+        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+            <a href="#">
+                Next →
+            </a>
+        </button>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="w-full h-full flex justify-center items-center">
+    <h1 class="text-xl font-semibold">No pending payments</h1>
+</div>
+{% endif %}
+</section>
+{% endblock section %}
+

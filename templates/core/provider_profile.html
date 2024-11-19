@@ -1,0 +1,164 @@
+{% extends "base.html" %} 
+
+{% block main_content %} 
+
+{% include "components/navbar.html" %}
+
+
+
+<!-- Main Services Page Container -->
+<div class="min-h-screen  py-6 ">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="container mx-auto px-4">
+            <!-- Profile Header -->
+            <div class="flex items-center justify-between mb-6">
+                <!-- Provider Info -->
+                <div class="flex items-center">
+                    <img class="w-20 h-20 rounded-full border-2 border-blue-500 mr-4" src="https://via.placeholder.com/150" alt="Provider Avatar">
+                    <div class="space-y-1">
+                        <h1 class="text-3xl font-bold text-gray-900">{{ provider.username.title() }}</h1>
+                        <p class="text-sm text-gray-600">@{{ provider.username }}</p>
+                        <p class="text-xs text-gray-500">Joined: {{ provider.created_at.date() }}</p>
+                    </div>
+                    
+                </div>
+
+                <!-- Contact & Rating -->
+                <div class="text-right flex items-center gap-3">
+                    <p class="text-lg text-gray-900 font-semibold">4.9 out of 5</p>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.367 4.204a1 1 0 00.95.69h4.473c.967 0 1.371 1.24.588 1.81l-3.632 2.64a1 1 0 00-.364 1.118l1.368 4.205c.3.921-.755 1.688-1.54 1.118L10 15.917l-3.631 2.64c-.785.57-1.841-.197-1.54-1.118l1.368-4.205a1 1 0 00-.364-1.118l-3.632-2.64c-.783-.57-.379-1.81.588-1.81h4.473a1 1 0 00.95-.69l1.367-4.204z"/>
+                        </svg>
+                        <span class="ml-2 text-sm text-gray-600">(150 reviews)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About the Provider -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">About</h2>
+                <p class="text-gray-600">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse dolorem saepe soluta expedita totam laudantium laborum eos ex tenetur illo consequuntur nulla in doloribus maiores tempora odio molestiae cumque earum ratione odit, nostrum ducimus. Sit repellendus voluptas sint perferendis, necessitatibus ullam exercitationem sequi itaque, cupiditate maxime magnam quas vitae hic.
+                </p>
+            </div>
+
+            <!-- Key Statistics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-semibold text-gray-900">120</h3>
+                    <p class="text-sm text-gray-600">Total Bookings</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-semibold text-gray-900">4.9</h3>
+                    <p class="text-sm text-gray-600">Average Rating</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-semibold text-gray-900">5 years</h3>
+                    <p class="text-sm text-gray-600">Experience</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-semibold text-gray-900">10</h3>
+                    <p class="text-sm text-gray-600">Certifications</p>
+                </div>
+            </div>
+
+            <!-- Services Offered -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Services Offered</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+                    {% for service in provider.services  %}
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4 space-y-2">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ service.title }}</h3>
+                            <p class="text-sm text-gray-600">Starting from {{ service.price }} ₹</p>
+                            <button class="bg-blue-500 text-white text-sm font-semibold px-4 py-1 rounded-lg">
+                                <a href="{{ url_for('core.get_listed_service', service_id=service.id) }}">More Info</a>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Customer Reviews -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Customer Reviews</h2>
+                <div class="space-y-4">
+                    <!-- Single Review -->
+                    <div class="bg-white shadow-sm p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <img class="w-8 h-8 rounded-full" src="https://via.placeholder.com/150" alt="User Avatar">
+                            <p class="text-sm font-semibold text-gray-900 ml-3">Alice Johnson</p>
+                        </div>
+                        <p class="text-gray-600 text-sm">
+                            "John did an amazing job with our home cleaning. He was punctual, efficient, and very thorough. Highly recommended!"
+                        </p>
+                    </div>
+                    <!-- Repeat for other reviews -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="max-w-sm rounded overflow-hidden shadow-lg bg-white border border-gray-200">
+  <!-- Card Image (Optional) -->
+  <img class="w-full h-48 object-cover" src="https://via.placeholder.com/150" alt="Category Image">
+  
+  <!-- Card Content -->
+  <div class="p-6">
+    <!-- Category Name -->
+    <h5 class="text-2xl font-bold mb-2 text-gray-900">Cleaning Services</h5>
+    
+    <!-- Description -->
+    <p class="text-gray-700 text-base mb-4">
+      Professional cleaning services for your home and office. Thorough and efficient service to keep your space spotless.
+    </p>
+    
+    <!-- Base Price -->
+    <div class="mb-4">
+      <span class="font-semibold text-lg text-green-600">Starting at:</span>
+      <span class="text-lg font-bold text-green-700">$50</span>
+    </div>
+
+    <!-- Providers Count -->
+    <div class="flex items-center mb-4">
+      <svg class="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l7 7 7-7M5 12l7-7 7 7"></path>
+      </svg>
+      <span class="text-gray-600">15 Service Providers</span>
+    </div>
+
+    <!-- Explore Services Button -->
+    <a href="#" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all duration-300">
+      Explore Services
+      <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7-7 7"></path>
+      </svg>
+    </a>
+  </div>
+</div>
+
+{% include "components/footer.html" %} 
+
+{% endblock main_content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

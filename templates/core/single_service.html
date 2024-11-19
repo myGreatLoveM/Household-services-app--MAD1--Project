@@ -1,0 +1,231 @@
+{% extends "base.html" %} 
+
+{% block main_content %} 
+
+<div id="content" class="min-h-screen ">
+    {% include "components/navbar.html" %}
+    <div class="max-w-7xl mx-auto">
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- Service Title and Provider Info -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <!-- Service Name -->
+                    <h1 class="text-3xl font-bold text-gray-900">{{ service.title }}</h1>
+
+                    <!-- Provider Info -->
+                    <div class="flex items-center mt-2">
+                        <img class="w-12 h-12 rounded-full border-2 border-blue-500 mr-4" src="https://via.placeholder.com/150" alt="Provider Avatar">
+                        <div>
+                            <a href="{{ url_for('core.get_verified_provider', prov_id=service.provider.id) }}">
+                                <p class="text-sm font-medium text-gray-900">{{ service.provider.username }}</p>
+                            </a>
+                            <p class="text-xs text-gray-500">{{ service.provider.experience }} years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base Price -->
+                <div class="flex items-center gap-10">
+                    <div class="text-right">
+                        <p class="text-lg text-gray-900 font-semibold">Starting from {{ service.price }} ₹</p>
+                        <p class="text-sm text-gray-500">per session</p>
+                    </div>
+
+
+                    {% if current_user.is_authenticated and current_user.is_customer %}
+                        <button id="book-btn" class="bg-blue-500 text-white text-normal font-semibold px-5 py-2 rounded-lg hover:bg-blue-600">
+                            Book Now
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+        
+            <!-- Service Details -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Description and Details</h2>
+                <p class="text-gray-600 mb-4">
+                    {{ service.description }}
+                </p>
+                <ul class="list-disc ml-6 text-gray-600">
+                    <li>Lorem ipsum dolor sit amet.</li>
+                    <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, rerum.</li>
+                    <li>Magni ea, deleniti qui officiis adipisci </li>
+                    <li>iusto ipsa consequuntur? Nisi error quod provident suscipit.</li>
+                </ul>
+            </div>
+
+
+            <!-- Customer Ratings and Reviews -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Customer Reviews</h2>
+                <!-- Average Rating -->
+                <div class="flex items-center mb-4">
+                    <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.367 4.204a1 1 0 00.95.69h4.473c.967 0 1.371 1.24.588 1.81l-3.632 2.64a1 1 0 00-.364 1.118l1.368 4.205c.3.921-.755 1.688-1.54 1.118L10 15.917l-3.631 2.64c-.785.57-1.841-.197-1.54-1.118l1.368-4.205a1 1 0 00-.364-1.118l-3.632-2.64c-.783-.57-.379-1.81.588-1.81h4.473a1 1 0 00.95-.69l1.367-4.204z"/>
+                    </svg>
+                    <p class="text-xl font-semibold text-gray-900 ml-2">4.8 out of 5</p>
+                    <p class="text-sm text-gray-500 ml-4">(300 reviews)</p>
+                </div>
+
+                <!-- Individual Reviews -->
+                <div class="space-y-4">
+                    <!-- Single Review -->
+                    <div class="bg-white shadow-sm p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <img class="w-8 h-8 rounded-full" src="https://via.placeholder.com/150" alt="User Avatar">
+                            <p class="text-sm font-semibold text-gray-900 ml-3">Alice Johnson</p>
+                        </div>
+                        <p class="text-gray-600 text-sm">
+                            "Fantastic service! My house has never been this clean. Will definitely book again."
+                        </p>
+                    </div>
+                    <!-- Repeat for other reviews -->
+                </div>
+            </div>
+
+
+            <!-- Service Provider's Other Services -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Other Services by John Doe</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Other Service Card -->
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <!-- Repeat other services offered -->
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Recommanded services</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Other Service Card -->
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <!-- Repeat other services offered -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.is_customer and form %}
+<div id="booking-modal" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right- left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-emerald-600 rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <h3 class="text-lg font-semibold text-gray-900 text-white">Book Service</h3>
+                <button id="close-modal-btn" class=" text-white bg-transparent hover:text-gray-400 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form id="book-form" class="p-5" action="{{ url_for('customer.book_listed_service', cust_id=current_user.customer.id, service_id=service.id) }}"  method="post">
+                <!-- Booking form content -->
+                {{ form.hidden_tag() }}
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        {{ form.book_date.label(for="book_date", class="block mb-2 text-sm font-medium
+                        text-white") }} {{ form.book_date(id="book_date",  class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.fullfillment_date.label(for="fullfillment_date", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.fullfillment_date(
+                        id="fullfillment_date", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.remark.label(for="remark", class="block mb-2 text-sm
+                        font-medium text-white") }} {{ form.remark( id="remark",
+                        class="bg-white border border-gray-300 text-gray-900 text-sm
+                        rounded-lg focus:ring-primary-600 focus:border-primary-600 block
+                        w-full p-2.5") }}
+                    </div>
+                </div>
+                <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+    </div>
+{% endif %}
+
+
+{% include "components/footer.html" %} 
+{% endblock main_content %}
+
+
+{% block script %}
+<script>
+{% if current_user.is_authenticated and current_user.is_customer %}
+document.addEventListener('DOMContentLoaded', function () {
+        const content = document.getElementById('content')
+        const bookBtn = document.querySelector('#book-btn')
+        const modal = document.querySelector('#booking-modal')
+        const closeModalBtn = document.querySelector('#close-modal-btn')
+        const form = document.querySelector('#book-form')
+
+        bookBtn.addEventListener('click', function () {
+            modal.classList.remove('hidden')
+            content.classList.add('opacity-50')
+        })
+
+        closeModalBtn.addEventListener('click', function () {
+            modal.classList.add('hidden')
+            content.classList.remove('opacity-50')
+        })
+
+        form.addEventListener('submit', function() {
+            closeModalBtn.click()
+        })
+    })
+</script>
+{% endif %}
+{% endblock script %}
+
+
+
+

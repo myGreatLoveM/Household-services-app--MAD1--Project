@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div id="dashboard" class="w-full h-full min-h-screen flex overflow-y-auto">
+    
+    {% block sidebar %}{% endblock sidebar %}
+
+    <div class="w-full h-full min-h-screen max-h-screen py-8 overflow-y-auto">
+        {% block section %}{% endblock section %}
+    </div>
+</div>
+
+{% block modals %}{% endblock modals %}
+
+{% endblock main_content %}
+
+
+
+

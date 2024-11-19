@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/customer_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+    <h1>Customer Dashboard</h1>
+
+    <label for="date">Select a date:</label>
+    <input type="date" id="date" name="date">
+
+    <br>
+
+    <label for="time">Select a time:</label>
+    <input type="time" id="time" name="time">
+
+    <br>
+    <br>
+    <br>
+
+    <label for="datetime">Select date and time:</label>
+    <input type="datetime-local" id="datetime" name="datetime">
+
+{% endblock section %}

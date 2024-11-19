@@ -1,0 +1,244 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/admin_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+<section class="mx-auto w-full max-w-7xl px-4 ">
+
+<div class="max-w-full bg-white border border-gray-200 rounded-lg shadow-lg p-6">
+  <!-- Category Name & Performance Overview -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-900">{{ category.name }}</h2>
+    <span class="bg-green-100 text-green-700 text-sm font-semibold py-1 px-3 rounded">Overall Performance: 85%</span>
+  </div>
+
+  <!-- Category Description -->
+  <p class="text-gray-600 text-base mt-2">
+    {{ category.description }}
+  </p>
+
+  <!-- Divider -->
+  <hr class="my-4 border-gray-300">
+
+  <!-- Category Stats (Providers, Services, Bookings) -->
+  <div class="grid grid-cols-3 gap-4">
+    <!-- Total Providers -->
+    <div class="bg-blue-100 p-4 rounded-lg text-center">
+      <h5 class="text-xl font-bold text-blue-700">{{ data | length }}</h5>
+      <p class="text-sm text-blue-600">Service Providers</p>
+    </div>
+    
+    <!-- Total Services -->
+    <div class="bg-purple-100 p-4 rounded-lg text-center">
+      <h5 class="text-xl font-bold text-purple-700">50</h5>
+      <p class="text-sm text-purple-600">Services Listed</p>
+    </div>
+
+    <!-- Total Bookings -->
+    <div class="bg-yellow-100 p-4 rounded-lg text-center">
+      <h5 class="text-xl font-bold text-yellow-700">120</h5>
+      <p class="text-sm text-yellow-600">Total Bookings</p>
+    </div>
+  </div>
+
+  <!-- Services Overview Section -->
+  <div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-800">Services Overview</h3>
+    <div class="overflow-x-auto mt-4">
+      <table class="min-w-full bg-white border">
+        <thead>
+          <tr class="text-left bg-gray-100 border-b">
+            <th class="py-2 px-4 font-semibold text-gray-700">Service Title</th>
+            <th class="py-2 px-4 font-semibold text-gray-700">Provider</th>
+            <th class="py-2 px-4 font-semibold text-gray-700">Rate</th>
+            <th class="py-2 px-4 font-semibold text-gray-700">Bookings</th>
+            <th class="py-2 px-4 font-semibold text-gray-700">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Service 1 -->
+          <tr class="border-b">
+            <td class="py-2 px-4 text-gray-800">Deep Home Cleaning</td>
+            <td class="py-2 px-4 text-gray-800">John Doe</td>
+            <td class="py-2 px-4 text-gray-800">$100</td>
+            <td class="py-2 px-4 text-gray-800">25</td>
+            <td class="py-2 px-4">
+              <span class="bg-green-100 text-green-600 py-1 px-2 rounded-full text-sm">Active</span>
+            </td>
+          </tr>
+          <!-- Service 2 -->
+          <tr class="border-b">
+            <td class="py-2 px-4 text-gray-800">Office Cleaning</td>
+            <td class="py-2 px-4 text-gray-800">Jane Smith</td>
+            <td class="py-2 px-4 text-gray-800">$80</td>
+            <td class="py-2 px-4 text-gray-800">18</td>
+            <td class="py-2 px-4">
+              <span class="bg-red-100 text-red-600 py-1 px-2 rounded-full text-sm">Inactive</span>
+            </td>
+          </tr>
+          <!-- Add more services dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+    <!-- Providers and Bookings Overview Section -->
+  <div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-800">Providers and Current Bookings</h3>
+    
+    <!-- Providers List -->
+    <div class="space-y-4 mt-4">
+      
+      <!-- Provider 1 Card -->
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <!-- Provider Info -->
+        <div class="flex justify-between items-center">
+          <div>
+            <h4 class="text-xl font-bold text-gray-800">John Doe</h4>
+            <p class="text-gray-600">Experience: 5 Years</p>
+          </div>
+          <div class="text-right">
+            <p class="text-gray-700 font-semibold">3 Current Bookings</p>
+            <p class="text-green-700 font-semibold">$300 Total Earnings</p>
+          </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full bg-white border">
+            <thead>
+              <tr class="text-left bg-gray-200 border-b">
+                <th class="py-2 px-4 font-semibold text-gray-700">Booking ID</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Customer</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Service</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Rate</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Booking 1 -->
+              <tr class="border-b">
+                <td class="py-2 px-4 text-gray-800">BKG-12345</td>
+                <td class="py-2 px-4 text-gray-800">Alice Smith</td>
+                <td class="py-2 px-4 text-gray-800">Deep Home Cleaning</td>
+                <td class="py-2 px-4 text-gray-800">$100</td>
+                <td class="py-2 px-4">
+                  <span class="bg-green-100 text-green-600 py-1 px-2 rounded-full text-sm">Paid</span>
+                </td>
+              </tr>
+              <!-- Booking 2 -->
+              <tr class="border-b">
+                <td class="py-2 px-4 text-gray-800">BKG-12346</td>
+                <td class="py-2 px-4 text-gray-800">Michael Johnson</td>
+                <td class="py-2 px-4 text-gray-800">Office Cleaning</td>
+                <td class="py-2 px-4 text-gray-800">$150</td>
+                <td class="py-2 px-4">
+                  <span class="bg-yellow-100 text-yellow-600 py-1 px-2 rounded-full text-sm">Pending</span>
+                </td>
+              </tr>
+              <!-- Add more bookings dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Provider 2 Card -->
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <!-- Provider Info -->
+        <div class="flex justify-between items-center">
+          <div>
+            <h4 class="text-xl font-bold text-gray-800">Jane Smith</h4>
+            <p class="text-gray-600">Experience: 3 Years</p>
+          </div>
+          <div class="text-right">
+            <p class="text-gray-700 font-semibold">2 Current Bookings</p>
+            <p class="text-green-700 font-semibold">$200 Total Earnings</p>
+          </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full bg-white border">
+            <thead>
+              <tr class="text-left bg-gray-200 border-b">
+                <th class="py-2 px-4 font-semibold text-gray-700">Booking ID</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Customer</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Service</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Rate</th>
+                <th class="py-2 px-4 font-semibold text-gray-700">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Booking 1 -->
+              <tr class="border-b">
+                <td class="py-2 px-4 text-gray-800">BKG-12347</td>
+                <td class="py-2 px-4 text-gray-800">Tom Hanks</td>
+                <td class="py-2 px-4 text-gray-800">Window Cleaning</td>
+                <td class="py-2 px-4 text-gray-800">$70</td>
+                <td class="py-2 px-4">
+                  <span class="bg-green-100 text-green-600 py-1 px-2 rounded-full text-sm">Paid</span>
+                </td>
+              </tr>
+              <!-- Booking 2 -->
+              <tr class="border-b">
+                <td class="py-2 px-4 text-gray-800">BKG-12348</td>
+                <td class="py-2 px-4 text-gray-800">Sandra Lee</td>
+                <td class="py-2 px-4 text-gray-800">Floor Scrubbing</td>
+                <td class="py-2 px-4 text-gray-800">$130</td>
+                <td class="py-2 px-4">
+                  <span class="bg-yellow-100 text-yellow-600 py-1 px-2 rounded-full text-sm">Pending</span>
+                </td>
+              </tr>
+              <!-- Add more bookings dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div> <!-- End Providers List -->
+  </div> <!-- End Providers Overview -->
+
+  <!-- Explore More Button -->
+  <div class="mt-6 flex justify-end">
+    <a href="#" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all duration-300">
+      View More Details
+      <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7-7 7"></path>
+      </svg>
+    </a>
+  </div>
+</div>
+
+
+<div class="w-full border-t border-gray-300 mt-5">
+  <div class="mt-2 flex items-center justify-between">
+    <div>
+      <p>showing results</p>
+    </div>
+    <div class="space-x-2">
+        <button
+        type="button"
+        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+            <a href="#">
+                ← Previous
+            </a>
+        </button>
+        <button
+        type="button"
+        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+            <a href="#">
+                Next →
+            </a>
+        </button>
+    </div>
+  </div>
+</div>
+
+</section>
+{% endblock section %}

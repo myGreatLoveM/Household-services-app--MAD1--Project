@@ -1,0 +1,53 @@
+<div class="relative w-full bg-white">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <div class="inline-flex items-center space-x-2">
+      <a href="/" class="font-bold text-xl tracking-wide">HouseHelpNow</a>
+    </div>
+    
+    <div class="space-x-5 lg:block">
+        <a href="{{ url_for('core.get_all_categories') }}" class="text-md font-semibold text-gray-400">
+          categories
+        </a>
+        <a href="{{ url_for('core.get_all_listed_services') }}" class="text-md font-semibold text-gray-400">
+          services
+        </a>
+
+        {% if current_user.is_authenticated and current_user.is_customer %}
+          <a href="{{ url_for('customer.get_all_pending_bookings', cust_id=current_user.customer.id) }}" class="text-md font-semibold text-gray-400">
+            pending_bookings
+          </a>
+          <a href="{{ url_for('customer.get_all_pending_payments', cust_id=current_user.customer.id) }}" class="text-md font-semibold text-gray-400">
+            pending_payments
+          </a>
+        {% endif %}
+
+        {% if current_user.is_authenticated %}
+          {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.dashboard') }}" class="text-lg font-semibold text-amber-400">
+              {{ current_user.username }}
+            </a>
+          {% elif current_user.is_customer %}
+            <a href="{{ url_for('customer.dashboard', cust_id=current_user.customer.id) }}" class="text-lg font-semibold text-amber-400">
+              {{ current_user.username }}
+            </a>
+          {% elif current_user.is_provider %}
+             <a href="{{ url_for('provider.dashboard', prov_id=current_user.provider.id) }}" class="text-lg font-semibold text-amber-400">
+              {{ current_user.username }}
+            </a>
+          {% endif %}
+        {% endif %}
+
+      {% if not current_user.is_authenticated %}
+        <button
+          type="button"
+          class="rounded-md border border-black px-4 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+          <a href="{{ url_for('auth.login') }}">
+            Log In
+          </a>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+

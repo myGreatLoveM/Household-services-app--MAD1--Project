@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/customer_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+<div class=" shadow-lg rounded-lg p-8 mb-8 max-w-4xl mx-auto border border-gray-200">
+    <!-- Booking Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="space-y-1">
+            <h2 class="text-3xl font-semibold text-gray-800">Booking #{{ booking.id }}</h2>
+            <h5 class="text-sm text-gray-600">{{ booking.created_at.strftime("%Y-%m-%d %I:%M %p")}}</h5>
+        </div>
+        <span class="text-sm text-gray-500">status: <span class="font-semibold text-green-500">
+            {% if booking.status == booking_status_enum.CLOSE.value %}
+                {{ booking_status_enum.COMPLETE.value }}
+            {% else %}
+                {{ booking.status }}
+            {% endif %}
+        </span></span>
+    </div>
+
+    <!-- Customer and Service Info -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <!-- Customer Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Provider Information</h3>
+            <p class="text-gray-600">Name: <span class="font-semibold">{{ booking.service.provider.username }}</span></p>
+            <p class="text-gray-600">Email: <span class="font-semibold">{{ booking.service.provider.user.profile.email }}</span></p>
+            {% if booking.payment.status == payment_status_enum.PAID.value %}
+                <p class="text-gray-600">Location: <span class="font-semibold">{{ booking.service.provider.user.profile.location }}</span></p>
+                <p class="text-gray-600">Contact: <span class="font-semibold">{{ booking.service.provider.user.profile.contact }}</span></p>
+            {% endif %}
+        </div>
+
+        <!-- Service Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Service Details</h3>
+            <p class="text-gray-600">Service Title: <span class="font-semibold">{{ booking.service.title }}</span></p>
+            <p class="text-gray-600">Category: <span class="font-semibold">{{ booking.service.provider.category.name }}</span></p>
+            <p class="text-gray-600">Price: <span class="font-semibold text-blue-500">{{ booking.service.price }} ₹</span></p>
+            <p class="text-gray-600">Time Required: <span class="font-semibold">{{ booking.service.time_required_hr }} hrs</span></p>
+        </div>
+    </div>
+
+    <!-- Booking and Payment Details -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <!-- Booking Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-3 ">
+            <div class="space-y-2">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Booking Information</h3>
+                <p class="text-gray-600">Date Booked from: <p class="font-semibold text-gray-600">{{ booking.book_date.strftime("%Y-%m-%d %I:%M %p") }} -- {{ booking.fullfillment_date.strftime("%Y-%m-%d %I:%M %p") }}</p></p>
+                <p class="text-gray-600">Remark: <span class="font-semibold">{{ booking.remark }}</span></p>
+            </div>
+            <div class="space-y-2">
+                {% if booking.confimation_date %}
+                <p class="text-gray-600">Confirmed on: <span class="font-semibold">
+                    {{ booking.confimation_date.strftime("%Y-%m-%d %I:%M %p")}}
+                </span></p>
+                {% endif %}
+                {% if booking.completed_date %}
+                <p class="text-gray-600">Completed on : <span class="font-semibold">
+                    {{ booking.completed_date.strftime("%Y-%m-%d %I:%M %p")}}
+                </span></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Payment Info -->
+        {% if booking.payment %}
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Payment Information</h3>
+            <p class="text-gray-600">Status: <span class="font-semibold text-green-500">{{ booking.payment.status }}</span></p>
+            {% if booking.payment.status == payment_status_enum.PAID.value %}
+                <p class="text-gray-600">Date: <span class="font-semibold">{{ booking.payment.updated_at.strftime("%Y-%m-%d %I:%M %p") }} </span></p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if booking.review %}
+    <div class="mt-4">
+        <h4 class="text-md font-semibold text-gray-700 mb-2">Review & Ratings</h4>
+        <div class="space-y-4">
+            <!-- Review 1 -->
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-00">{{ booking.review.created_at.strftime("%Y-%m-%d %I:%M %p")}}</p>
+                    <div class="flex items-center">
+                        {% for _ in range(booking.review.rating)  %}
+                        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.283 3.953a1 1 0 00.95.691h4.17c.969 0 1.371 1.24.588 1.81l-3.383 2.457a1 1 0 00-.364 1.118l1.283 3.953c.3.921-.755 1.688-1.54 1.118l-3.383-2.457a1 1 0 00-1.175 0l-3.383 2.457c-.785.57-1.839-.197-1.54-1.118l1.283-3.953a1 1 0 00-.364-1.118L2.268 9.381c-.783-.57-.381-1.81.588-1.81h4.17a1 1 0 00.95-.691l1.283-3.953z"></path>
+                        </svg>
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="overflow-wrap text-sm text-gray-600 mt-2 ">{{booking.review.comment}}</p>
+            </div>
+            <!-- Add more reviews dynamically -->
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-6 mt-6">
+        {% if booking.status == booking_status_enum.ACTIVE.value %}
+            <button class="px-5 py-2 bg-pink-600 text-white font-semibold rounded shadow-md hover:bg-pink-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                <a href="{{ url_for('customer.handle_booking', cust_id=cust_id, booking_id=booking.id, status=booking_status_enum.COMPLETE.value) }}">
+                    Complete
+                </a>
+            </button>
+        {% endif %}
+        
+        {% if booking.status == booking_status_enum.CONFIRM.value %}
+            <button class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded shadow-md hover:bg-emerald-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                <a href="{{ url_for('customer.go_to_payment_portal', cust_id=cust_id, payment_id=booking.payment.id) }}">
+                    Pay
+                </a>
+            </button>
+        {% endif %}
+
+        {% if booking.status in [booking_status_enum.COMPLETE.value, booking_status_enum.CLOSE.value] and not booking.review %}
+            <button id="add-review-btn" class="px-5 py-2 bg-purple-600 text-white font-semibold rounded shadow-md hover:bg-purple-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                Review
+            </button>
+        {% endif %}
+    </div>
+</div>
+{% endblock section %}
+
+{% block modals %}
+{% if form %}
+<div id="review-modal" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right- left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-emerald-600 rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <h3 class="text-lg font-semibold text-gray-900 text-white">Book Service</h3>
+                <button id="close-modal-btn" class="text-white bg-transparent hover:text-gray-400 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form id="review-form" class="p-5" action="{{ url_for('customer.review_completed_booking', cust_id=cust_id, booking_id=booking.id) }}"  method="post">
+                <!-- Booking form content -->
+                {{ form.hidden_tag() }}
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        {{ form.rating.label(for="rating", class="block mb-2 text-sm font-medium
+                        text-white") }} {{ form.rating(id="rating",  class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.comment.label(for="comment", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.comment(
+                        id="comment", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                </div>
+                <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+    </div>
+{% endif %}
+{% endblock modals %}
+
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dashboard = document.getElementById('dashboard')
+    const addReviewBtn = document.querySelector('#add-review-btn')
+    const modal = document.querySelector('#review-modal')
+    const closeModalBtn = document.querySelector('#close-modal-btn')
+    const form = document.querySelector('#review-form')
+
+    console.log(form)
+
+    addReviewBtn.addEventListener('click', function () {
+        modal.classList.remove('hidden')
+        dashboard.classList.add('opacity-50')
+    })
+
+    closeModalBtn.addEventListener('click', function () {
+        modal.classList.add('hidden')
+        dashboard.classList.remove('opacity-50')
+    })
+
+    form.addEventListener('submit', function() {
+        closeModalBtn.click()
+    })
+})
+
+</script>
+{% endblock script %}

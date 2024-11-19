@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/admin_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+<div class="bg-white shadow-lg rounded-lg p-8 mb-8 max-w-4xl mx-auto border border-gray-200">
+    <!-- Booking Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-semibold text-gray-800">Booking #{{ booking.id }}</h2>
+        <span class="text-sm text-gray-500">Status: <span class="font-semibold text-green-500">Confirmed</span></span>
+    </div>
+
+    <!-- Customer and Service Info -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <!-- Customer Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Customer Information</h3>
+            <p class="text-gray-600">Name: <span class="font-semibold">John Doe</span></p>
+            <p class="text-gray-600">Username: <span class="font-semibold">johndoe123</span></p>
+            <p class="text-gray-600">Email: <span class="font-semibold">johndoe@example.com</span></p>
+            <p class="text-gray-600">Contact: <span class="font-semibold">(555) 123-4567</span></p>
+        </div>
+
+        <!-- Service Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Service Details</h3>
+            <p class="text-gray-600">Service Title: <span class="font-semibold">Plumbing Repair</span></p>
+            <p class="text-gray-600">Category: <span class="font-semibold">Plumbing</span></p>
+            <p class="text-gray-600">Price: <span class="font-semibold text-blue-500">$150.00</span></p>
+            <p class="text-gray-600">Time Required: <span class="font-semibold">2 hours</span></p>
+        </div>
+    </div>
+
+    <!-- Booking and Payment Details -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <!-- Booking Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Booking Information</h3>
+            <p class="text-gray-600">Date Booked: <span class="font-semibold">2024-11-05</span></p>
+            <p class="text-gray-600">Booking Time: <span class="font-semibold">2024-11-06 10:00 AM</span></p>
+            <p class="text-gray-600">Booking Status: <span class="font-semibold text-blue-500">Confirmed</span></p>
+            <p class="text-gray-600">Remarks: <span class="font-semibold">N/A</span></p>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Payment Information</h3>
+            <p class="text-gray-600">Payment Status: <span class="font-semibold text-green-500">Completed</span></p>
+            <p class="text-gray-600">Total Amount: <span class="font-semibold text-blue-500">$150.00</span></p>
+            <p class="text-gray-600">Payment Method: <span class="font-semibold">Credit Card</span></p>
+            <p class="text-gray-600">Payment Date: <span class="font-semibold">2024-11-05</span></p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-6 mt-6">
+        <!-- Confirm button -->
+        <button class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+            Confirm
+        </button>
+        
+        <!-- Reject button -->
+        <button class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+            Reject
+        </button>
+        
+        <!-- Cancel button -->
+        <button class="px-6 py-3 bg-yellow-600 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+            Cancel
+        </button>
+        
+        <!-- Reschedule button -->
+        <button class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+            Reschedule
+        </button>
+    </div>
+</div>
+
+
+
+{% endblock section %}

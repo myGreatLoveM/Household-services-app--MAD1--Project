@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+
+    {% include "components/navbar.html" %}
+
+    <section>
+    <div
+        class="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24"
+    >
+        <div class="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
+        <h2 class="text-center text-2xl font-bold leading-tight text-black">
+            Log in to your account
+        </h2>
+
+        <form action="{{ url_for('auth.login') }}" method="post" class="mt-8">
+            {{ form.hidden_tag() }}
+            <div class="space-y-6">
+                <div>
+                    {{ form.username.label(for="username", class="text-base font-medium
+                    text-gray-900") }}
+                    <div class="mt-2">
+                        {{ form.username(type="text", id="username", class="flex h-10
+                        w-full rounded-md border border-gray-300 bg-transparent px-3 py-2
+                        text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1
+                        focus:ring-gray-400 focus:ring-offset-1
+                        disabled:cursor-not-allowed disabled:opacity-50") }}
+                    </div>
+                    {% if form.username.errors %}
+                        {% for error in form.username.errors %}
+                            <p class="mt-1 mb-1 text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    {{ form.password.label(for="password" ,class="text-base font-medium
+                    text-gray-900") }}
+                    <div class="mt-2">
+                    {{ form.password(type="password", id="password", class="flex h-10
+                    w-full rounded-md border border-gray-300 bg-transparent px-3 py-2
+                    text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1
+                    focus:ring-gray-400 focus:ring-offset-1
+                    disabled:cursor-not-allowed disabled:opacity-50") }}
+                    </div>
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <p class="mt-1 mb-1 text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    {{ form.submit(class="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80") }}
+                </div>
+            </div>
+        </form>
+
+        <p class="mt-4 text-center text-sm text-gray-600">
+            Don&#x27;t have an account?
+            <div class="flex flex-col items-center gap-1 mt-2">
+                <a
+                href="{{ url_for('auth.register', role=role_enum.CUSTOMER.value) }}"
+                class="font-semibold text-sm  text-black transition-all duration-200 hover:underline"
+                >
+                Register as customer
+                </a>
+                <a
+                href="{{ url_for('auth.register', role=role_enum.PROVIDER.value) }}"
+                class="font-semibold text-sm  text-black transition-all duration-200 hover:underline"
+                >
+                Register as service provider
+                </a>
+            </div>
+        </p>
+        </div>
+    </div>
+    </section>
+
+{% endblock %}

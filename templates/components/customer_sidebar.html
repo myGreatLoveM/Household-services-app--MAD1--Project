@@ -1,0 +1,28 @@
+<aside class="flex max-h-screen w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8">
+  <a href="/" class="font-bold text-xl tracking-wide">HouseHelpNow</a>
+
+  <div class="mt-6 flex flex-1 flex-col justify-between">
+    <nav class="-mx-3 space-y-5">
+      <div class="space-y-3">
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="{{ url_for('customer.dashboard', cust_id=cust_id) }}">
+          <span class="mx-2 text-md font-medium">Dashboard</span>
+        </a>
+      </div>
+      
+      <div class="space-y-2">
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="{{ url_for('customer.get_all_bookings', cust_id=cust_id) }}">
+          <span class="mx-2 text-md font-medium">Bookings</span>
+        </a>
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="{{ url_for('customer.get_all_payments', cust_id=cust_id) }}">
+          <span class="mx-2 text-md font-medium">Payments</span>
+        </a>
+      </div>
+
+      <div class="space-y-2">
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="#">
+          <span class="mx-2 text-md font-medium">Profile</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</aside>

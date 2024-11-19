@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/admin_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+<section class="mx-auto w-full max-w-7xl px-4 py-4">
+
+    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 ">
+  <!-- Profile Header -->
+  <div class="flex items-center justify-between pb-4 border-b">
+    <div class="flex items-center space-x-4">
+      <img src={{ provider.user.profile.avatar }} alt="User Avatar" class="w-24 h-24 rounded-full object-cover">
+      <div>
+        <h2 class="text-2xl font-semibold">{{ provider.user.profile.full_name }}</h2>
+        <p class="text-gray-500">@{{ provider.username }}</p>
+        <div class="flex space-x-2 mt-2">
+          <span class="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">Provider</span>
+        </div>
+      </div>
+    </div>
+    <div class="text-right text-gray-500">
+      <p>Status : <span class="font-medium text-green-500">
+        {% if provider.is_blocked %}
+         blocked
+        {% elif provider.is_approved %}
+          active
+        {% else %}
+          pending
+        {% endif %}
+      </span></p>
+      <p>Joined : <span class="font-medium">{{ provider.created_at.strftime("%Y-%m-%d %I:%M %p") }}</span></p>
+      {% if provider.approved_at %}
+        <p>Approved : <span class="font-medium">{{ provider.approved_at.strftime("%Y-%m-%d %I:%M %p") }}</span></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Contact and Profile Info -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <h3 class="text-xl font-semibold mb-2">Contact Information</h3>
+      <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+        <p><span class="font-medium">Email : </span> {{ provider.user.profile.email }}</p>
+        <p><span class="font-medium">Phone : </span> {{ provider.user.profile.contact }}</p>
+        <p><span class="font-medium">Location : </span>{{ provider.user.profile.location }}</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-xl font-semibold mb-2">Profile Information</h3>
+      <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+        <p><span class="font-medium">Gender : </span> {{ provider.user.profile.gender }}</p>
+        <p><span class="font-medium">Age : </span> 32</p>
+        <p><span class="font-medium">Bio : </span> Skilled in plumbing, electrical, and general household repairs.</p>
+      </div>
+    </div>
+  </div>
+
+  {% if provider.is_approved %}
+  <!-- Services Section -->
+  <div class="mt-8">
+    <h3 class="text-xl font-semibold mb-4">Services Provided</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="text-lg font-semibold">Plumbing Services</h4>
+        <p><span class="font-medium">Rate:</span> $50/hour</p>
+        <p><span class="font-medium">Experience:</span> 5 years</p>
+        <p><span class="font-medium">Category:</span> Home Maintenance</p>
+        <p><span class="font-medium">Description:</span> Offering comprehensive plumbing solutions for homes.</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="text-lg font-semibold">Electrical Services</h4>
+        <p><span class="font-medium">Rate:</span> $60/hour</p>
+        <p><span class="font-medium">Experience:</span> 3 years</p>
+        <p><span class="font-medium">Category:</span> Electrical Work</p>
+        <p><span class="font-medium">Description:</span> Handling electrical repairs and installations efficiently.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking History -->
+  <div class="mt-8">
+    <h3 class="text-xl font-semibold mb-4">Booking History</h3>
+    <div class="space-y-4">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Service:</span> Plumbing Services</p>
+        <p><span class="font-medium">Status:</span> Completed</p>
+        <p><span class="font-medium">Date:</span> Sept 12, 2023</p>
+        <p><span class="font-medium">Remarks:</span> Quick and efficient work, very satisfied.</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Service:</span> Electrical Services</p>
+        <p><span class="font-medium">Status:</span> Pending</p>
+        <p><span class="font-medium">Date:</span> Oct 5, 2023</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Section -->
+  <div class="mt-8">
+    <h3 class="text-xl font-semibold mb-4">Payment History</h3>
+    <div class="space-y-4">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Amount:</span> $150</p>
+        <p><span class="font-medium">Method:</span> Credit Card</p>
+        <p><span class="font-medium">Status:</span> Completed</p>
+        <p><span class="font-medium">Date:</span> Sept 12, 2023</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Amount:</span> $180</p>
+        <p><span class="font-medium">Method:</span> PayPal</p>
+        <p><span class="font-medium">Status:</span> Pending</p>
+        <p><span class="font-medium">Date:</span> Oct 5, 2023</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="mt-8">
+    <h3 class="text-xl font-semibold mb-4">Customer Reviews</h3>
+    <div class="space-y-4">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Rating:</span> ⭐⭐⭐⭐⭐</p>
+        <p>"Great service! Very professional and timely."</p>
+        <p class="text-gray-500 text-sm">- Sarah, Sept 2023</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p><span class="font-medium">Rating:</span> ⭐⭐⭐⭐</p>
+        <p>"Good service, but communication could be improved."</p>
+        <p class="text-gray-500 text-sm">- Mark, Aug 2023</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+
+</section>
+
+{% endblock section %}

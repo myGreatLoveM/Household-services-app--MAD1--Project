@@ -1,0 +1,330 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/admin_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+<section class="mx-auto w-full max-w-7xl px-4 py-4">
+<div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+    <div>
+      <h2 class="text-lg font-semibold">All Categories</h2>
+      <p class="mt-1 text-sm text-gray-700">
+        This is a list of all categories.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-10">
+        <div class="relative inline-block text-left">
+            <button id="dropdownFilterButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" aria-expanded="true" aria-haspopup="true">
+                Filter by type
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <!-- Dropdown menu, show/hide based on menu state. -->
+            <div id="dropdownFilterMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownFilterButton">
+                <div class="py-1" role="none">
+                    <!-- Active: "bg-gray-100", Not Active: "" -->
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative inline-block text-left">
+            <button id="dropdownSortButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 " aria-expanded="true" aria-haspopup="true">
+                Sort by
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <!-- Dropdown menu, show/hide based on menu state. -->
+            <div id="dropdownSortMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownSortButton">
+                <div class="py-1" role="none">
+                    <!-- Active: "bg-gray-100", Not Active: "" -->
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
+                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
+                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
+                </div>
+            </div>
+        </div>
+
+        <button
+        type="button"
+        id="add-category-btn"
+        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+            Add Category
+        </button>
+    </div>
+
+</div>
+
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
+  <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+    <thead class="text-left bg-gray-50 uppercase">
+      <tr class="text-center">
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Id</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Name</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Base price /hr</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Min time /hr</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Providers</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Services</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Listed</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Action</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-200">
+        {% for category, active_providers, active_services in categories.items  %}
+        <tr class="odd:bg-white even:bg-gray-50 text-center">
+            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ category.id }}</td>
+            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ category.name }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.base_price }} ₹</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.min_time_hr }}hr</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ active_providers }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                {% if active_services %}
+                    {{ active_services }}
+                {% else %}
+                    0
+                {% endif %}
+            </td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.created_at.strftime("%Y-%m-%d %I:%M %p") }}</td>
+            <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
+                <a href="{{ url_for('admin.get_category', category_id=category.id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if categories.total > categories.per_page %}
+<div class="w-full border-t border-gray-300 mt-5">
+  <div class="mt-2 flex items-center justify-between">
+    <div>
+      <p>
+         showing <strong>{{ categories.first }}</strong> to <strong>{{ categories.last }}</strong> of <strong>{{ categories.total }}</strong> results
+      </p>
+    </div>
+    <div class="space-x-2">
+        {% if categories.has_prev %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_all_categories', page=categories.prev_num ) }}">
+                    ← Previous
+                </a>
+            </button>
+        {% endif %}
+
+        {% if categories.has_next %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_all_categories', page=categories.next_num ) }}">
+                    Next →
+                </a>
+            </button>
+        {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+</section>
+
+{% endblock section %}
+
+{% block modals %}
+    {% if form %}
+        <div
+        id="service-modal"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right- left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-emerald-600 rounded-lg shadow">
+            <!-- Modal header -->
+            <div
+                class="flex items-center justify-between p-4 md:p-5 border-b rounded-t "
+            >
+                <h3 class="text-lg font-semibold text-gray-900 text-white">
+                  Add Category
+                </h3>
+                <button
+                id="close-modal-btn"
+                type="button"
+                class="text-white bg-transparent hover:text-gray-400 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center "
+                data-modal-toggle="crud-modal"
+                >
+                <svg
+                    class="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                >
+                    <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form id="add-service-form" action="{{ url_for('admin.add_new_category') }}" method="post" class="p-4 md:p-5">
+                {{ form.hidden_tag() }}
+
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        {{ form.name.label(for="name", class="block mb-2 text-sm font-medium
+                        text-white") }} {{ form.name(type="text", id="name", class="bg-white
+                        border border-gray-300 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5", ) }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.base_price.label(for="base_price", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.base_price(
+                        id="base_price", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.min_time_hr.label(for="min_time_hr", class="block mb-2 text-sm
+                        font-medium text-white") }} {{ form.min_time_hr( id="min_time_hr",
+                        class="bg-white border border-gray-300 text-gray-900 text-sm
+                        rounded-lg focus:ring-primary-600 focus:border-primary-600 block
+                        w-full p-2.5",) }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.service_rate.label(for="service_rate", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.service_rate(
+                        id="service_rate", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.booking_rate.label(for="booking_rate", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.booking_rate(
+                        id="booking_rate", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.transaction_rate.label(for="transaction_rate", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.transaction_rate(
+                        id="transaction_rate", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.cancellation_rate.label(for="cancellation_rate", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.cancellation_rate(
+                        id="cancellation_rate", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.penalty_rate.label(for="penalty_rate", class="block
+                        mb-2 text-sm font-medium text-white") }} {{ form.penalty_rate(
+                        id="penalty_rate", class="bg-white border border-gray-300
+                        text-gray-900 text-sm rounded-lg focus:ring-primary-600
+                        focus:border-primary-600 block w-full p-2.5") }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form.description.label(for="description", class="block mb-2 text-sm
+                        font-medium text-white") }} {{ form.description( id="description",
+                        class="bg-white border border-gray-300 text-gray-900 text-sm
+                        rounded-lg focus:ring-primary-600 focus:border-primary-600 block
+                        w-full p-2.5") }}
+                    </div>
+                </div>
+                <button
+                    type="submit"
+                    id="submit-btn"
+                    class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Submit
+                </button>
+            </form>
+            </div>
+        </div>
+        </div>
+    {% endif %}
+{% endblock modals %}
+
+
+{% block script %}
+<script>
+    const addCategoryBtn = document.querySelector('#add-category-btn')
+    const closeModalBtn = document.querySelector('#close-modal-btn')
+    const form = document.querySelector('#add-service-form')
+
+    addCategoryBtn.addEventListener('click', function () {
+        document.querySelector('#service-modal').classList.remove('hidden')
+        document.querySelector('#dashboard').classList.add('opacity-50')
+    })
+
+    closeModalBtn.addEventListener('click', function () {
+        document.querySelector('#service-modal').classList.add('hidden')
+        document.querySelector('#dashboard').classList.remove('opacity-50')
+    })
+
+    form.addEventListener('submit', function() {
+        closeModalBtn.click()
+    })
+
+
+    document.getElementById('dropdownFilterButton').addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownFilterMenu');
+            const button = event.currentTarget;
+            menu.classList.toggle('hidden');
+            button.classList.toggle('bg-gray-100');
+            button.classList.toggle('text-gray-900');
+        })
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('dropdownFilterMenu');
+        const button = document.getElementById('dropdownFilterButton');
+        if (!button.contains(event.target) && !menu.contains(event.target)) {
+            menu.classList.add('hidden');
+            button.classList.remove('bg-gray-100');
+            button.classList.remove('text-gray-900');
+        }
+    })
+
+    document.getElementById('dropdownSortButton').addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownSortMenu');
+            const button = event.currentTarget;
+            menu.classList.toggle('hidden');
+            button.classList.toggle('bg-gray-100');
+            button.classList.toggle('text-gray-900');
+        })
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('dropdownSortMenu');
+        const button = document.getElementById('dropdownSortButton');
+        if (!button.contains(event.target) && !menu.contains(event.target)) {
+            menu.classList.add('hidden');
+            button.classList.remove('bg-gray-100');
+            button.classList.remove('text-gray-900');
+        }
+    })
+</script>
+
+{% endblock script %}

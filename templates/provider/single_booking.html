@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/provider_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+
+
+<div class="bg-white shadow-lg rounded-lg p-8 mb-8 max-w-4xl mx-auto border border-gray-200">
+ <!-- Booking Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="space-y-1">
+            <h2 class="text-3xl font-semibold text-gray-800">Booking #{{ booking.id }}</h2>
+            <h5 class="text-sm text-gray-600">{{ booking.created_at.strftime("%Y-%m-%d %I:%M %p")}}</h5>
+        </div>
+        <span class="text-sm text-gray-500">Status: <span class="font-semibold text-green-500">{{ booking.status }}</span></span>
+    </div>
+
+    <!-- Customer and Service Info -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 ">
+        <!-- Customer Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Customer Information</h3>
+            <p class="text-gray-600">Name: <span class="font-semibold">{{ booking.customer.username }}</span></p>
+            <p class="text-gray-600">Location: <span class="font-semibold">{{ booking.customer.user.profile.location }}</span></p>
+            {% if booking.payment.status == payment_status_enum.PAID.value %}
+                <p class="text-gray-600">Email: <span class="font-semibold">{{ booking.customer.user.profile.email }}</span></p>
+                <p class="text-gray-600">Contact: <span class="font-semibold">{{ booking.customer.user.profile.contact }}</span></p>
+            {% endif %}
+        </div>
+
+        <!-- Service Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Service Details</h3>
+            <p class="text-gray-600">Service Title: <span class="font-semibold">{{ booking.service.title }}</span></p>
+            <p class="text-gray-600">Category: <span class="font-semibold">{{ booking.service.provider.category.name }}</span></p>
+            <p class="text-gray-600">Price: <span class="font-semibold text-blue-500">{{ booking.service.price }} ₹</span></p>
+            <p class="text-gray-600">Time Required: <span class="font-semibold">{{ booking.service.time_required_hr }} hrs</span></p>
+        </div>
+    </div>
+
+    <!-- Booking and Payment Details -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <!-- Booking Info -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-3">
+            <div class="space-y-2">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Booking Information</h3>
+                <p class="text-gray-600">Date Booked from: <p class="font-semibold text-gray-600">{{ booking.book_date.strftime("%Y-%m-%d %I:%M %p") }} -- {{ booking.fullfillment_date.strftime("%Y-%m-%d %I:%M %p") }}</p></p>
+                <p class="text-gray-600">Remark: <span class="font-semibold">{{ booking.remark }}</span></p>
+            </div>
+            <div class="space-y-2">
+
+            {% if booking.confimation_date %}
+            <p class="text-gray-600">Confirmed on: <span class="font-semibold">
+                {{ booking.confimation_date.strftime("%Y-%m-%d %I:%M %p")}}
+            </span></p>
+            {% endif %}
+            {% if booking.completed_date %}
+            <p class="text-gray-600">Completed on : <span class="font-semibold">
+                {{ booking.completed_date.strftime("%Y-%m-%d %I:%M %p")}}
+            </span></p>
+            {% endif %}
+            {% if booking.closed_date %}
+            <p class="text-gray-600">Closed on: <span class="font-semibold">
+                {{ booking.closed_date.strftime("%Y-%m-%d %I:%M %p")}}
+            </span></p>
+            {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Payment Info -->
+        {% if booking.payment %}
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">Payment Information</h3>
+            <p class="text-gray-600">Payment Status: <span class="font-semibold text-green-500">{{ booking.payment.status }}</span></p>
+            {% if booking.payment.status == payment_status_enum.PAID.value %}
+                <p class="text-gray-600">Payment Date: <span class="font-semibold">{{ booking.payment.updated_at.strftime("%Y-%m-%d %I:%M %p") }} </span></p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-6 mt-6">
+        {% if booking.status == booking_status_enum.PENDING.value %}
+            <button class="px-5 py-2 bg-green-600 text-white font-semibold rounded shadow-md hover:bg-green-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                <a href="{{ url_for('provider.handle_booking', prov_id=prov_id, booking_id=booking.id, status=booking_status_enum.CONFIRM.value) }}">
+                    Confirm
+                </a>
+            </button>
+            <button class="px-5 py-2 bg-red-600 text-white font-semibold rounded shadow-md hover:bg-red-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                <a href="{{ url_for('provider.handle_booking', prov_id=prov_id, booking_id=booking.id, status=booking_status_enum.REJECT.value) }}">
+                    Reject
+                </a>
+            </button>
+        {% endif %}
+        
+
+        {% if booking.status == booking_status_enum.COMPLETE.value %}
+            <button class="px-5 py-2 bg-zinc-600 text-white font-semibold rounded shadow-md hover:bg-zinc-700 transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none">
+                <a href="{{ url_for('provider.handle_booking', prov_id=prov_id, booking_id=booking.id, status=booking_status_enum.CLOSE.value) }}">
+                    Close
+                </a>
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+
+
+{% endblock section %}

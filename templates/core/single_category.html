@@ -1,0 +1,95 @@
+{% extends "base.html" %} 
+
+{% block main_content %} 
+
+<div id="content" class="min-h-screen ">
+    {% include "components/navbar.html" %}
+    <div class="max-w-7xl mx-auto">
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- Service Title and Provider Info -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <!-- Service Name -->
+                    <h1 class="text-3xl font-bold text-gray-900">{{ category.name }}</h1>
+                </div>
+
+                <!-- Base Price -->
+                <div class="flex items-center gap-10">
+                    <div class="text-right">
+                        <p class="text-lg text-gray-900 font-semibold">Starting from {{ category.base_price }} ₹</p>
+                        <p class="text-sm text-gray-500">per hr</p>
+                    </div>
+
+
+                    <a href="{{ url_for('core.get_all_listed_services', cat_id=category.id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all duration-300 mt-3 text-sm">
+                        Explore Services
+                        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+        
+
+            <!-- Service Details -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Description and Details</h2>
+                <p class="text-gray-600 mb-4">
+                    {{ category.long_description }}
+                </p>
+                <ul class="list-disc ml-6 text-gray-600">
+                    <li>Lorem ipsum dolor sit amet.</li>
+                    <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, rerum.</li>
+                    <li>Magni ea, deleniti qui officiis adipisci </li>
+                    <li>iusto ipsa consequuntur? Nisi error quod provident suscipit.</li>
+                </ul>
+            </div>
+
+
+
+
+
+            <!-- Service Provider's Other Services -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Popular services offered</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Other Service Card -->
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
+                            <p class="text-sm text-gray-600">Starting from $80</p>
+                        </div>
+                    </div>
+                    <!-- Repeat other services offered -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+{% include "components/footer.html" %} 
+{% endblock main_content %}
+
+
+
+
+
+
+

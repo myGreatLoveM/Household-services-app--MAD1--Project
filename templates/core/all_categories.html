@@ -1,0 +1,112 @@
+
+
+
+{% extends "base.html" %} 
+
+{% block main_content %} 
+
+{% include "components/navbar.html" %}
+
+
+<!-- Main Services Page Container -->
+<div class="w-full min-h-screen  py-6 mx-auto">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex mt-5">
+
+            <!-- Main Content: Service Cards Grid -->
+            <div class="flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    {% for category, active_providers, active_services in categories.items %}
+                      <div class="max-w-sm rounded-lg overflow-hidden shadow-lg bg-white border border-gray-200">
+                        <div class="p-6 h-full flex flex-col justify-between">
+                          <!-- Category Name -->
+                          <h5 class="text-2xl font-bold mb-2 text-gray-900">
+                            <a href="{{ url_for('core.get_single_category', cat_id=category.id) }}">{{ category.name }}</a>
+                          </h5>
+                          
+                          <!-- Description -->
+                          <p class="text-gray-700 text-base mb-4">
+                            {{ category.short_description }}
+                          </p>
+                          
+                          <!-- Base Price -->
+                          <div class="mb-4">
+                            <span class="font-semibold text-lg text-green-600">Starting at:</span>
+                            <span class="text-lg font-bold text-green-700">{{ category.base_price }} ₹ <span class="text-sm text-gray-500">/hr</span></span>
+                          </div>
+
+                          <!-- Providers Count -->
+                          <div class="flex items-center mb-4">
+                            <svg class="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l7 7 7-7M5 12l7-7 7 7"></path>
+                            </svg>
+                            <span class="text-gray-600">{{ active_providers }} Active Providers</span>
+                          </div>
+
+                          <div class="flex items-center mb-4">
+                            <svg class="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l7 7 7-7M5 12l7-7 7 7"></path>
+                            </svg>
+                            <span class="text-gray-600">{% if active_services %}{{ active_services }}{% else %}0{% endif %} Active Services</span>
+                          </div>
+
+                          <!-- Explore Services Button -->
+                          <a href="{{ url_for('core.get_all_listed_services', cat_id=category.id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all duration-300 mt-3 text-sm">
+                            Explore Services
+                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7-7 7"></path>
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if categories.total > categories.per_page %}
+        <div class="w-full border-t border-gray-300 mt-5">
+            <div class="mt-2 flex items-center justify-between">
+                <div>
+                  <p>
+                    showing <strong>{{ categories.first }}</strong> to <strong>{{ categories.last }}</strong> of <strong>{{ categories.total }}</strong>
+                    results
+                  </p>
+                </div>
+                <div class="space-x-2">
+                  {% if categories.prev_num %}
+                    <button
+                    type="button"
+                    class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                    >
+                        <a href="{{ url_for('core.get_all_categories', page=categories.prev_num ) }}">
+                            ← Previous
+                        </a>
+                    </button>
+                  {% endif %}
+                  {% if categories.next_num %}
+                    <button
+                    type="button"
+                    class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                    >
+                      <a href="{{ url_for('core.get_all_categories', page=categories.next_num ) }}">
+                          Next →
+                      </a>
+                    </button>
+                  {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% include "components/footer.html" %} 
+
+{% endblock main_content %}
+
+
+
+
