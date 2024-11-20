@@ -10,7 +10,7 @@ from .enums import ProviderAvailabilityEnum
 class ServiceListingForm(FlaskForm):
     title = StringField(
         label='Title',
-        validators=[DataRequired(message='Title is required'), Length(min=3, max=30)],
+        validators=[DataRequired(message='Title is required'), Length(min=3, max=100)],
         render_kw={"placeholder": "Test Service title"}
     )
     price = IntegerField(

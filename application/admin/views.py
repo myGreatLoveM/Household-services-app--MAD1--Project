@@ -1,8 +1,8 @@
-from flask import current_app, redirect, render_template, request, url_for
+from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from application.decorators import role_required
 from application.admin.forms import CategoryRegisterForm
-from application.providers.enums import ServiceStatusEnum
+from application.providers.enums import BookingStatusEnum, ServiceStatusEnum
 from . import admin
 from .models import Admin, Category
 from application.extensions import db
@@ -35,17 +35,14 @@ def get_all_categories():
     page = request.args.get('page', default=1, type=int)
     per_page = current_app.config.get('ITEMS_PER_PAGE', 6)
     form = CategoryRegisterForm()
-    # db.session.query(Category, db.func.count(Provider.id).label('provider_count'), db.func.count(Service.id)).outerjoin(Provider, Category.providers).outerjoin(Service, Provider.services).group_by(Category.id).all()
 
-    # db.session.query(Category, db.func.count(db.distinct(Provider.id)), db.func.count(Service.id)).outerjoin(Provider, Category.providers).outerjoin(Service, Provider.services).group_by(Category.id).all()
-
-
-    # db.session.query(Provider, db.func.count(db.case((db.and_(Service.is_blocked==False, Service.is_active==True), Service.id)))).outerjoin(Service, Provider.services).filter(Provider.is_blocked==False).group_by(Provider.id).subquery()
-
-    prov_with_active_services = (
+    try:
+        prov_with_active_services = (
         db.session.query(
                 Provider, 
-                db.func.count(db.case((db.and_( Service.is_approved==True, Service.is_active==True, Service.is_blocked==False), Service.id))).label('active_services')
+                db.func.count(
+                    db.case((db.and_( Service.is_approved==True, Service.is_active==True, Service.is_blocked==False), Service.id))
+                ).label('active_services')
             )
             .outerjoin(Service, Provider.services) \
             .filter(Provider.is_blocked==False, Provider.is_approved==True) \
@@ -53,16 +50,18 @@ def get_all_categories():
             .subquery()
     ) 
 
-    categories = (
-        db.session.query(
-            Category, 
-            db.func.count(prov_with_active_services.c.id),
-            db.func.sum(prov_with_active_services.c.active_services)
+        categories = (
+            db.session.query(
+                Category, 
+                db.func.count(prov_with_active_services.c.id),
+                db.func.sum(prov_with_active_services.c.active_services)
+            )
+            .outerjoin(prov_with_active_services)
+            .group_by(Category.id)
+            .paginate(page=page, per_page=per_page, error_out=False)
         )
-        .outerjoin(prov_with_active_services)
-        .group_by(Category.id)
-        .paginate(page=page, per_page=per_page, error_out=False)
-    )
+    except SQLAlchemyError as e:
+        raise InternalServerError()
     return render_template('admin/all_categories.html', categories=categories, form=form)
 
 
@@ -74,6 +73,10 @@ def get_category(category_id):
 
     data = db.session.query(Category, Provider, Service).join(Provider, Service.provider).join(Category, Provider.category).filter(Category.id == category_id).all()
     print(data)
+    try:
+        pass
+    except SQLAlchemyError as e:
+        raise InternalServerError()
 
     return render_template('admin/single_category.html', category=category, data=data)
 
@@ -92,16 +95,22 @@ def add_new_category():
         service_rate = form.data.get('service_rate')
         booking_rate = form.data.get('booking_rate')
         transaction_rate = form.data.get('transaction_rate')
-        cancellation_rate = form.data.get('cancellation_rate')
-        penalty_rate = form.data.get('penalty_rate')
-        description = form.data.get('description')
+        short_description = form.data.get('short_description')
+        long_description = form.data.get('long_description')
 
-        new_category = Category(name=name, base_price=base_price, min_time_hr=min_time_hr, service_rate=service_rate, booking_rate=booking_rate, transaction_rate=transaction_rate, cancellation_rate=cancellation_rate, penalty_rate=penalty_rate, description=description)
+        new_category = Category(
+            name=name, base_price=base_price, min_time_hr=min_time_hr, \
+            service_rate=service_rate, booking_rate=booking_rate, transaction_rate=transaction_rate, \
+            short_description=short_description, long_description=long_description)
 
         admin.categories.append(new_category)
 
-        db.session.add(new_category)
-        db.session.commit()
+        try:
+            db.session.add(new_category)
+            db.session.commit() 
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise InternalServerError()
     return redirect(url_for('admin.get_all_categories'))
 
 
@@ -241,7 +250,6 @@ def handle_customer(cust_id):
             customer.is_blocked = False
     else:
         raise NotFound('Not found customer')
-
     db.session.commit()
     return redirect(url_for('admin.get_all_customers'))
 
@@ -251,11 +259,29 @@ def handle_customer(cust_id):
 # -----------------------Services--------------------------------
 # ---------------------------------------------------------------
 
-@admin.route('/services/')
+@admin.route('/services')
 @login_required
 @role_required(UserRoleEnum.ADMIN.value)
 def get_all_services():
-    services = Service.query.filter_by(is_approved=True).all()
+    page = request.args.get('page', default=1, type=int)
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 6)
+    try:
+        services = (
+            db.session.query(
+                Service,
+                db.func.count(
+                    db.case((Booking.status == BookingStatusEnum.ACTIVE.value, Booking.id))
+                ).label('active_bookings')
+            )
+            .outerjoin(Booking, Service.bookings)
+            .group_by(Service.id)
+            .filter(Service.is_approved==True)
+            .all()
+        )
+        print(services)
+        services = Service.query.filter_by(is_approved=True).all()
+    except SQLAlchemyError as e:
+        raise InternalServerError()
     return render_template('admin/all_services.html', services=services, service_status_enum=ServiceStatusEnum)
 
 
@@ -263,7 +289,12 @@ def get_all_services():
 @login_required
 @role_required(UserRoleEnum.ADMIN.value)
 def get_new_services_listed():
-    services = Service.query.filter_by(is_approved=False).all()
+    page = request.args.get('page', default=1, type=int)
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 6)
+    try:
+        services = Service.query.filter_by(is_approved=False).paginate(page=page, per_page=per_page)
+    except SQLAlchemyError as e:
+        raise InternalServerError()
     return render_template('admin/new_services.html', services=services, service_status_enum=ServiceStatusEnum)
 
 
@@ -283,10 +314,13 @@ def handle_service(service_id):
         if status == ServiceStatusEnum.APPROVE.value:
             service.is_approved = True
             service.approved_at = datetime.today()
+            flash(f'{service.title} is approved')
         elif status == ServiceStatusEnum.BLOCK.value:
             service.is_blocked = True
+            flash(f'{service.title} is blocked')
         elif status == ServiceStatusEnum.UNBLOCK.value:
             service.is_blocked = False
+            flash(f'{service.title} is unblocked')
     else:
         raise NotFound('Not found service')
     db.session.commit()

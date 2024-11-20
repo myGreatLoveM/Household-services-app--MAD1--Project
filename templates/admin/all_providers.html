@@ -59,7 +59,6 @@
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Services</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Bookings</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">joined</th>
         <th scope="col"  class="px-4 py-2">Action</th>
       </tr>
     </thead>
@@ -84,7 +83,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.user.created_at.strftime("%Y-%m-%d %I:%M %p") }}</td>
             <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
                 <a
                     href="{{ url_for('admin.get_provider', prov_id=provider.id,) }}"

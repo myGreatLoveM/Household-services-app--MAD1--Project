@@ -12,12 +12,11 @@
     <div>
       <h2 class="text-lg font-semibold">New Service listed</h2>
       <p class="mt-1 text-sm text-gray-700">
-        This is a list of newly new service listed by verified service providers which are not varified yet
+        This is a list of newly listed services by verified service providers which are not varified yet
       </p>
     </div>
 
     <div class="flex items-center gap-10">
-        
         <div class="relative inline-block text-left">
             <button id="dropdownButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="true" aria-haspopup="true">
                 Filter by type
@@ -40,7 +39,7 @@
     </div>
 </div>
 
-
+{% if services.items %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
   <table class="min-w-full divide-gray-200 bg-white text-sm">
     <thead class="text-left bg-gray-50 uppercase">
@@ -56,7 +55,7 @@
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-      {% for service in services  %}
+      {% for service in services.items  %}
       <tr class="odd:bg-white even:bg-gray-50 text-center">
         <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ service.title }}</td>
         <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.provider.username }}</td>
@@ -73,7 +72,7 @@
                 </span>
             {% endif %}
         </td>
-        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.created_at.strftime("%Y-%m-%d %I:%M %p") }}</td>
+        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.created_at.date() }}</td>
         <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
           <a
             href="{{ url_for('admin.get_service', service_id=service.id ) }}"
@@ -109,33 +108,44 @@
     </tbody>
   </table>
 </div>
-
-
+{% if services.total > services.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
   <div class="mt-2 flex items-center justify-between">
     <div>
-      <p>showing results</p>
+      <p>
+         showing <strong>{{ services.first }}</strong> to <strong>{{ services.last }}</strong> of <strong>{{ services.total }}</strong> results
+      </p>
     </div>
     <div class="space-x-2">
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                ← Previous
-            </a>
-        </button>
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                Next →
-            </a>
-        </button>
+        {% if services.has_prev %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_new_services_listed', page=services.prev_num ) }}">
+                    ← Previous
+                </a>
+            </button>
+        {% endif %}
+
+        {% if services.has_next %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_new_services_listed', page=services.next_num ) }}">
+                    Next →
+                </a>
+            </button>
+        {% endif %}
     </div>
   </div>
 </div>
-
+{% endif %}
+{% else %}
+<div class="w-full h-full flex justify-center items-center mt-5">
+    <h1 class="text-xl font-semibold">No new services listed</h1>
+</div>
+{% endif %}
 </section>
 {% endblock section %}
