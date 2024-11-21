@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import abort, flash, render_template, redirect, request, url_for
 from flask_login import current_user, login_required
 
+from application.admin.models import Category
 from application.customers.eums import CustomerPaymentStatusEnum
 from application.customers.models import Booking, CustomerPayment
 from application.providers.enums import BookingStatusEnum, ServiceStatusEnum
@@ -27,7 +28,23 @@ def dashboard(prov_id):
 def get_all_services(prov_id):
     form = ServiceListingForm()
     services = Service.query.filter(Service.provider_id == prov_id).all()
-    return render_template('provider/all_services.html', services=services, prov_id=prov_id, form=form, service_status_enum=ServiceStatusEnum)
+    print(services)
+
+    s = db.session.query(
+        Service,
+        db.func.count(
+            db.case((Booking.status.in_([BookingStatusEnum.ACTIVE.value]), Booking.id))
+        ),
+        db.func.sum(
+            db.case((CustomerPayment.status.in_([CustomerPaymentStatusEnum.PAID.value]), CustomerPayment.service_cost))
+        )
+    ).outerjoin(Booking, Service.bookings).outerjoin(CustomerPayment, Booking.payment).group_by(Service.id).filter(Service.provider_id == prov_id).all()
+
+    print(s)
+
+    return render_template(
+        'provider/all_services.html', services=services, prov_id=prov_id, form=form, service_status_enum=ServiceStatusEnum
+    )
 
 
 @provider.route('/services/<int:service_id>')
@@ -52,10 +69,9 @@ def list_new_service(prov_id):
         time_required_hr = form.time_required_hr.data
         availability = form.availability.data
         description = form.description.data
-        details = form.details.data
 
         if Service.query.filter(Service.title.like(title)).count() == 0:
-            new_service = Service(title=title, price=price, description=description, availability=availability, time_required_hr=time_required_hr, details=details, provider_id=prov_id)
+            new_service = Service(title=title, price=price, description=description, availability=availability, time_required_hr=time_required_hr, provider_id=prov_id)
 
             try:
                 db.session.add(new_service)
@@ -113,60 +129,113 @@ def edit_service(prov_id, service_id):
 @login_required
 @role_required(UserRoleEnum.PROVIDER.value)
 def get_all_bookings(prov_id):
-    bookings = db.session.query(Booking).join(Service, Booking.service).join(Provider, Service.provider).filter(Booking.status.isnot(BookingStatusEnum.PENDING.value), Provider.id==prov_id).all()
+    bookings = (
+        db.session.query(
+            Booking
+        )
+        .join(Service, Booking.service)
+        .join(Provider, Service.provider)
+        .filter(Booking.status.isnot(BookingStatusEnum.PENDING.value), Provider.id==prov_id)
+        .all()
+    )
     
-    return render_template('provider/all_bookings.html', prov_id=prov_id, bookings=bookings, booking_status_enum=BookingStatusEnum, payment_status_enum=CustomerPaymentStatusEnum)
+    return render_template(
+        'provider/all_bookings.html', prov_id=prov_id, bookings=bookings, 
+        booking_status_enum=BookingStatusEnum, payment_status_enum=CustomerPaymentStatusEnum
+    )
 
 
 @provider.route('/bookings/<int:booking_id>')
 @login_required
 @role_required(UserRoleEnum.PROVIDER.value)
 def get_single_booking(prov_id, booking_id):
-    booking = db.session.query(Booking).join(Service, Booking.service).join(Provider, Service.provider).filter(Booking.id== booking_id, Provider.id==prov_id).first()
+    booking = (
+        db.session.query(
+            Booking
+        )
+        .join(Service, Booking.service)
+        .join(Provider, Service.provider)
+        .filter(Booking.id== booking_id, Provider.id==prov_id)
+        .first()
+    )
 
     if booking is None:
         raise NotFound('No such booking found for provider')
-    return render_template('provider/single_booking.html', prov_id=prov_id, booking=booking, booking_status_enum=BookingStatusEnum, payment_status_enum=CustomerPaymentStatusEnum)
+    return render_template(
+        'provider/single_booking.html', prov_id=prov_id, booking=booking,
+        booking_status_enum=BookingStatusEnum, payment_status_enum=CustomerPaymentStatusEnum
+    )
+
+@provider.route('bookings/new')
+@login_required
+@role_required(UserRoleEnum.PROVIDER.value)
+def get_all_new_bookings(prov_id):
+    bookings = (
+        db.session.query(
+            Booking
+        )
+        .join(Service, Booking.service)
+        .join(Provider, Service.provider)
+        .filter(Booking.status==BookingStatusEnum.PENDING.value, Provider.id==prov_id)
+        .all()
+    )
+
+    return render_template(
+        'provider/new_bookings.html', prov_id=prov_id, bookings=bookings, booking_status_enum=BookingStatusEnum
+    )
 
 
 @provider.route('/bookings/<int:booking_id>/handle')
 @login_required
 @role_required(UserRoleEnum.PROVIDER.value)
 def handle_booking(prov_id, booking_id):
-    booking_status = request.args.get('status', None)
+    status = request.args.get('status', None)
 
-    if booking_status not in [status.value for status in BookingStatusEnum]:
+    if status not in [BookingStatusEnum.REJECT.value, BookingStatusEnum.CONFIRM.value, BookingStatusEnum.CLOSE.value]:
         raise BadRequest('provide valid status query parameter')
 
-    booking = db.session.query(Booking).join(Service, Booking.service).join(Provider, Service.provider).filter(Booking.id== booking_id, Provider.id==prov_id).first()
+    booking, category = (
+        db.session.query(
+            Booking,
+            Category
+        )
+        .join(Service, Booking.service)
+        .join(Provider, Service.provider)
+        .join(Category, Provider.category)
+        .filter(Booking.id== booking_id, Provider.id==prov_id)
+        .first()
+    )
 
     if booking is None:
         raise NotFound('No such booking found for provider')
 
-    if booking_status == BookingStatusEnum.REJECT.value:
+    if status == BookingStatusEnum.REJECT.value:
         booking.status = BookingStatusEnum.REJECT.value
-    elif booking_status == BookingStatusEnum.CONFIRM.value:
+        flash('booking is rejected', category='success')
+    elif status == BookingStatusEnum.CONFIRM.value:
         booking.status = BookingStatusEnum.CONFIRM.value
         booking.confimation_date = datetime.today()
+
         service = booking.service
+        service_cost = service.price * service.time_required_hr
+
         pending_payment = CustomerPayment(
             status = CustomerPaymentStatusEnum.PENDING.value,
-            service_cost = service.price,
+            service_cost = service_cost,
+            platform_fee = round((category.service_rate * service_cost)/100),
+            transaction_fee = round((category.transaction_rate * service_cost)/100)
         )
+
         booking.payment = pending_payment
-    elif booking_status == BookingStatusEnum.CLOSE.value:
+        flash('booking is confirmed', category='success')
+    elif status == BookingStatusEnum.CLOSE.value:
         if booking.status == BookingStatusEnum.COMPLETE.value:
             booking.status = BookingStatusEnum.CLOSE.value
             booking.closed_date = datetime.today()
+            flash('booking is closed', category='success')
         else:
             flash('customer has not closed booking', category='error')
     db.session.commit()
     return redirect(url_for('provider.get_all_bookings', prov_id=prov_id))
 
 
-@provider.route('bookings/new')
-@login_required
-@role_required(UserRoleEnum.PROVIDER.value)
-def get_all_new_bookings(prov_id):
-    bookings = db.session.query(Booking).join(Service, Booking.service).join(Provider, Service.provider).filter(Booking.status==BookingStatusEnum.PENDING.value, Provider.id==prov_id).all()
-    return render_template('provider/new_bookings.html', prov_id=prov_id, bookings=bookings, booking_status_enum=BookingStatusEnum)

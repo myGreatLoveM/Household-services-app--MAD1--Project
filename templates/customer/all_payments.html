@@ -6,7 +6,7 @@
 
 
 {% block section %}
-
+{% if payments.items %}
 <section class="mx-auto w-full max-w-7xl px-4 py-4">
 <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
     <div>
@@ -63,7 +63,7 @@
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-        {% for payment in payments %}
+        {% for payment in payments.items %}
             <tr class="odd:bg-white even:bg-gray-50 text-center">
                 <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ payment.id }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.id }}</td>
@@ -87,33 +87,45 @@
 </div>
 
 
+{% if payments.total > payments.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
   <div class="mt-2 flex items-center justify-between">
     <div>
-      <p>showing results</p>
+      <p>
+         showing <strong>{{ payments.first }}</strong> to <strong>{{ payments.last }}</strong> of <strong>{{ payments.total }}</strong> results
+      </p>
     </div>
     <div class="space-x-2">
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                ← Previous
-            </a>
-        </button>
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                Next →
-            </a>
-        </button>
+        {% if payments.has_prev %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('customer.get_all_payments', cust_id=cust_id, page=payments.prev_num ) }}">
+                    ← Previous
+                </a>
+            </button>
+        {% endif %}
+
+        {% if payments.has_next %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('customer.get_all_payments', cust_id=cust_id, page=payments.next_num ) }}">
+                    Next →
+                </a>
+            </button>
+        {% endif %}
     </div>
   </div>
 </div>
-
+{% endif %}
 </section>
-
+{% else %}
+<div class="w-full h-full flex justify-center items-center">
+    <h1 class="text-xl font-semibold">No payments</h1>
+</div>
+{% endif %}
 
 {% endblock section %}

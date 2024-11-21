@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import UniqueConstraint
+from application.customers.models import Booking, Review
 from application.extensions import db
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -33,6 +34,7 @@ class Provider(db.Model):
     def username(self):
         return self.user.username
 
+
 class Service(db.Model):
     """
     Service model for storing details about services provided by professionals.
@@ -51,7 +53,6 @@ class Service(db.Model):
     visibility = db.Column(db.String(20), default='normal')  # 'normal', 'featured'
     availability = db.Column(db.String(50), default=ProviderAvailabilityEnum.ALL_TIME.value)  # e.g., 'Weekdays', 'Weekends', '24/7'
     description = db.Column(db.String(100))
-    details = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     approved_at = db.Column(db.DateTime)
@@ -59,14 +60,44 @@ class Service(db.Model):
     provider = db.relationship('Provider', back_populates='services')
     bookings = db.relationship('Booking', back_populates='service', lazy='dynamic')
 
+
     @hybrid_property
     def category(self):
         return self.provider.category
 
     @hybrid_property
     def avg_rating(self):
-        return 5
-    
+        return (
+            db.session.query(
+                db.func.avg(
+                    db.case(
+                        (Review.id.isnot(None), Review.rating)
+                    )
+                )
+            )
+            .join(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id), Booking.id.isnot(None), Review.id.isnot(None))
+            .scalar()
+        )
+
+
     @hybrid_property
     def no_of_reviews(self):
-        return 10
+        return (
+            db.session.query(
+                db.func.count(
+                    db.case(
+                        (Review.id.isnot(None), Review.id)
+                    )
+                )
+            )
+            .join(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id), Booking.id.isnot(None), Review.id.isnot(None))
+            .scalar()
+        )
+
+

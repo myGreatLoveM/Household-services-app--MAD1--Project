@@ -75,7 +75,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                     <!-- Repeat Service Cards here -->
-                    {% for service, provider in services.items %}
+                    {% for service, provider, profile in services.items %}
 
                         <!-- Inside the Service Cards Loop -->
                         <div class="max-w-sm bg-white shadow-lg border rounded-xl overflow-hidden transform transition duration-500 hover:scale-105 hover:shadow-xl">
@@ -91,14 +91,14 @@
                                 <div class="flex justify-between items-center mb-4">
                                     <div>
                                         <span class="text-sm text-gray-500">⏱ 60 mins</span>
-                                        <p class="text-sm text-gray-500">Base rate: <span class="text-blue-600">$100</span></p>
+                                        <p class="text-sm text-gray-500">Base rate: <span class="text-blue-600">{{ service.price }} ₹</span></p>
                                     </div>
                                     <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Verified</span>
                                 </div>
                                 
                                 <!-- Provider Information -->
                                 <div class="flex items-center mb-4">
-                                    <img class="w-12 h-12 rounded-full border-2 border-blue-500 mr-4" src="https://via.placeholder.com/150" alt="Provider Avatar">
+                                    <img class="w-12 h-12 rounded-full border-2 border-blue-500 mr-4" src={{ profile.avatar }} alt="Provider Avatar">
                                     <div>
                                         <a href="{{ url_for('core.get_verified_provider', prov_id=service.provider.id) }}">
                                             <p class="text-sm font-medium text-gray-900">{{ provider.username }}</p>
@@ -113,7 +113,7 @@
                                         <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.367 4.204a1 1 0 00.95.69h4.473c.967 0 1.371 1.24.588 1.81l-3.632 2.64a1 1 0 00-.364 1.118l1.368 4.205c.3.921-.755 1.688-1.54 1.118L10 15.917l-3.631 2.64c-.785.57-1.841-.197-1.54-1.118l1.368-4.205a1 1 0 00-.364-1.118l-3.632-2.64c-.783-.57-.379-1.81.588-1.81h4.473a1 1 0 00.95-.69l1.367-4.204z"/>
                                         </svg>
-                                        <p class="text-sm text-gray-600 ml-2">4.9 (200 reviews)</p>
+                                        <p class="text-sm text-gray-600 ml-2">{{ service.avg_rating }} ({{ service.no_of_reviews }} reviews)</p>
                                     </div>
                                     <p class="text-sm text-gray-600">300 bookings</p>
                                 </div>
@@ -126,37 +126,45 @@
                                 </div>
                             </div>
                         </div>
-
                     {% endfor %}
                 </div>
             </div>
         </div>
 
+         {% if services.total > services.per_page %}
         <div class="w-full border-t border-gray-300 mt-5">
             <div class="mt-2 flex items-center justify-between">
                 <div>
-                    <p>showing results</p>
+                  <p>
+                    showing <strong>{{ services.first }}</strong> to <strong>{{ services.last }}</strong> of <strong>{{ services.total }}</strong>
+                    results
+                  </p>
                 </div>
                 <div class="space-x-2">
+                  {% if services.prev_num %}
                     <button
                     type="button"
                     class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                     >
-                        <a href="#">
+                        <a href="{{ url_for('core.get_all_listed_services', page=services.prev_num ) }}">
                             ← Previous
                         </a>
                     </button>
+                  {% endif %}
+                  {% if services.next_num %}
                     <button
                     type="button"
                     class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                     >
-                        <a href="#">
-                            Next →
-                        </a>
+                      <a href="{{ url_for('core.get_all_listed_services', page=services.next_num ) }}">
+                          Next →
+                      </a>
                     </button>
+                  {% endif %}
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

@@ -38,7 +38,7 @@ def get_all_categories():
 
     try:
         prov_with_active_services = (
-        db.session.query(
+            db.session.query(
                 Provider, 
                 db.func.count(
                     db.case((db.and_( Service.is_approved==True, Service.is_active==True, Service.is_blocked==False), Service.id))
@@ -48,7 +48,7 @@ def get_all_categories():
             .filter(Provider.is_blocked==False, Provider.is_approved==True) \
             .group_by(Provider.id)
             .subquery()
-    ) 
+        ) 
 
         categories = (
             db.session.query(
@@ -77,7 +77,6 @@ def get_category(category_id):
         pass
     except SQLAlchemyError as e:
         raise InternalServerError()
-
     return render_template('admin/single_category.html', category=category, data=data)
 
 
@@ -104,7 +103,6 @@ def add_new_category():
             short_description=short_description, long_description=long_description)
 
         admin.categories.append(new_category)
-
         try:
             db.session.add(new_category)
             db.session.commit() 

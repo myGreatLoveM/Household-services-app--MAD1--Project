@@ -31,7 +31,9 @@ login_manager.needs_refresh_message_category = ''
 
 
 
-
 # flask db init
 # flask db migrate -m "<msg>"
 # flask db upgrade
+
+
+
