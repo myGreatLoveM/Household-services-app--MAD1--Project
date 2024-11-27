@@ -15,12 +15,12 @@
 
                     <!-- Provider Info -->
                     <div class="flex items-center mt-2">
-                        <img class="w-12 h-12 rounded-full border-2 border-blue-500 mr-4" src="https://via.placeholder.com/150" alt="Provider Avatar">
+                        <img class="w-12 h-12 rounded-full border-2 border-blue-500 mr-4" src="{{ provider.user.profile.avatar }}" alt="Provider Avatar">
                         <div>
                             <a href="{{ url_for('core.get_verified_provider', prov_id=service.provider.id) }}">
-                                <p class="text-sm font-medium text-gray-900">{{ service.provider.username }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ provider.username }}</p>
                             </a>
-                            <p class="text-xs text-gray-500">{{ service.provider.experience }} years experience</p>
+                            <p class="text-xs text-gray-500">{{ provider.experience }} years experience</p>
                         </div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                 <div class="flex items-center gap-10">
                     <div class="text-right">
                         <p class="text-lg text-gray-900 font-semibold">Starting from {{ service.price }} ₹</p>
-                        <p class="text-sm text-gray-500">per session</p>
+                        <p class="text-sm text-gray-500">per hr</p>
                     </div>
 
 
@@ -65,80 +65,47 @@
                     <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.367 4.204a1 1 0 00.95.69h4.473c.967 0 1.371 1.24.588 1.81l-3.632 2.64a1 1 0 00-.364 1.118l1.368 4.205c.3.921-.755 1.688-1.54 1.118L10 15.917l-3.631 2.64c-.785.57-1.841-.197-1.54-1.118l1.368-4.205a1 1 0 00-.364-1.118l-3.632-2.64c-.783-.57-.379-1.81.588-1.81h4.473a1 1 0 00.95-.69l1.367-4.204z"/>
                     </svg>
-                    <p class="text-xl font-semibold text-gray-900 ml-2">4.8 out of 5</p>
-                    <p class="text-sm text-gray-500 ml-4">(300 reviews)</p>
+                    <p class="text-xl font-semibold text-gray-900 ml-2">{{ service.avg_rating }} out of 5</p>
+                    <p class="text-sm text-gray-500 ml-4">({{ service.no_of_reviews }} reviews)</p>
                 </div>
 
-                <!-- Individual Reviews -->
-                <div class="space-y-4">
-                    <!-- Single Review -->
-                    <div class="bg-white shadow-sm p-4 rounded-lg">
-                        <div class="flex items-center mb-2">
-                            <img class="w-8 h-8 rounded-full" src="https://via.placeholder.com/150" alt="User Avatar">
-                            <p class="text-sm font-semibold text-gray-900 ml-3">Alice Johnson</p>
+                {% if service.top_review %}
+                    <div class="space-y-4">
+                        <div class="bg-white shadow-sm p-4 rounded-lg">
+                            <div class="flex  justify-between">
+                                <p class="text-sm font-semibold text-gray-800">{{ service.top_review.booking.customer.full_name }}</p>
+                                <div class="flex items-center">
+                                    {% for _ in range(service.top_review.rating)  %}
+                                        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.283 3.953a1 1 0 00.95.691h4.17c.969 0 1.371 1.24.588 1.81l-3.383 2.457a1 1 0 00-.364 1.118l1.283 3.953c.3.921-.755 1.688-1.54 1.118l-3.383-2.457a1 1 0 00-1.175 0l-3.383 2.457c-.785.57-1.839-.197-1.54-1.118l1.283-3.953a1 1 0 00-.364-1.118L2.268 9.381c-.783-.57-.381-1.81.588-1.81h4.17a1 1 0 00.95-.691l1.283-3.953z"></path>
+                                        </svg>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">{{ service.top_review.comment }}</p>
                         </div>
-                        <p class="text-gray-600 text-sm">
-                            "Fantastic service! My house has never been this clean. Will definitely book again."
-                        </p>
                     </div>
-                    <!-- Repeat for other reviews -->
-                </div>
+                {% endif %}
             </div>
 
 
             <!-- Service Provider's Other Services -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Other Services by John Doe</h2>
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Other Services by {{ provider.username }}</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <!-- Other Service Card -->
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <!-- Repeat other services offered -->
+                    
+                    {% for service in  provider.services[:3] %}
+                        <a href="{{ url_for('core.get_listed_service', service_id=service.id) }}">
+                            <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ service.title }}</h3>
+                                    <p class="text-sm text-gray-600">Starting from {{ service.price }} ₹</p>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
                 </div>
             </div>
-
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Recommanded services</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <!-- Other Service Card -->
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Deep Carpet Cleaning</h3>
-                            <p class="text-sm text-gray-600">Starting from $80</p>
-                        </div>
-                    </div>
-                    <!-- Repeat other services offered -->
-                </div>
-            </div>
-
         </div>
 
     </div>

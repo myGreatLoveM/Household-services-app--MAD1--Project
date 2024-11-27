@@ -12,15 +12,6 @@
           services
         </a>
 
-        {% if current_user.is_authenticated and current_user.is_customer %}
-          <a href="{{ url_for('customer.get_all_pending_bookings', cust_id=current_user.customer.id) }}" class="text-md font-semibold text-gray-400">
-            pending_bookings
-          </a>
-          <a href="{{ url_for('customer.get_all_pending_payments', cust_id=current_user.customer.id) }}" class="text-md font-semibold text-gray-400">
-            pending_payments
-          </a>
-        {% endif %}
-
         {% if current_user.is_authenticated %}
           {% if current_user.is_admin %}
             <a href="{{ url_for('admin.dashboard') }}" class="text-lg font-semibold text-amber-400">

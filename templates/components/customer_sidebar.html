@@ -19,8 +19,11 @@
       </div>
 
       <div class="space-y-2">
-        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="#">
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="{{ url_for('customer.profile', cust_id=cust_id) }}">
           <span class="mx-2 text-md font-medium">Profile</span>
+        </a>
+        <a class="flex items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700" href="{{ url_for('auth.logout') }}">
+          <span class="mx-2 text-md font-medium">Logout</span>
         </a>
       </div>
     </nav>

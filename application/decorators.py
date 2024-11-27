@@ -1,8 +1,6 @@
-from flask import abort, redirect, request, session, url_for, flash
 from flask_login import current_user, logout_user
-from functools import wraps
-from application.core.enums import UserRoleEnum
 from werkzeug.exceptions import Forbidden
+from functools import wraps
 
 
 def role_required(role_name):

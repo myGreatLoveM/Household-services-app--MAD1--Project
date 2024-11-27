@@ -7,21 +7,137 @@
 
 {% block section %}
 
-    <h1>Customer Dashboard</h1>
+<div class="container h-full mx-auto px-6 rounded-lg">
 
-    <label for="date">Select a date:</label>
-    <input type="date" id="date" name="date">
+  <div class="bg-white rounded-lg mb-8">
+    <div class="grid grid-cols-4 gap-4 mb-4">
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-bold text-gray-700">Total Bookings</p>
+        <p class="text-2xl font-bold text-indigo-600">{{ booking_stats.total_bookings }}</p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-bold text-gray-700">Active Bookings</p>
+        <p class="text-2xl font-bold text-indigo-600">{{ booking_stats.active_bookings }}</p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-bold text-gray-700">Completed Bookings</p>
+        <p class="text-2xl font-bold text-green-600">{{ booking_stats.completed_bookings }}</p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-bold text-gray-700">Lifetime Spent</p>
+        <p class="text-2xl font-bold text-yellow-600">{{ booking_stats.total_spent }} ₹</p>
+      </div>
+    </div>
+  </div>
 
-    <br>
+  {% if active_bookings %}
+    <div class="bg-white p-4 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Active Bookings</h2>
+        <table class="min-w-full divide-gray-200 bg-white text-sm">
+          <thead class="text-left bg-gray-50 uppercase">
+            <tr class="text-center">
+              <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booking ID</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Provider</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked On</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked At</th>
+              <th scope="col"  class="px-4 py-2">Action</th>
+            </tr>
+          </thead>
 
-    <label for="time">Select a time:</label>
-    <input type="time" id="time" name="time">
+          <tbody class="divide-y divide-gray-200">
+              {% for booking, service, provider_username in active_bookings  %}
+                  <tr class="odd:bg-white even:bg-gray-50 text-center">
+                      <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ booking.id }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider_username }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {% if booking.status == booking_status_enum.CONFIRM.value  %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-red-500 px-2.5 py-0.5 text-sm text-red-700"
+                          >
+                          rejected
+                          </span>
+                      {% elif booking.status == booking_status_enum.ACTIVE.value %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700 bg-green-100"
+                          >
+                          active
+                          </span>
+                      {% endif %}
+                      </td>
+                      
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.book_date.date() }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.created_at.date() }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
+                          <a
+                              href="{{ url_for('customer.get_single_booking', cust_id=cust_id, booking_id=booking.id) }}"
+                              class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                          >
+                              Detail
+                          </a>
+                          {% if booking.status == booking_status_enum.ACTIVE.value %}
+                              <a
+                                href="{{ url_for('customer.handle_booking', cust_id=cust_id, booking_id=booking.id, status=booking_status_enum.COMPLETE.value, next=url_for(request.endpoint, **request.view_args)) }}"
+                                class="inline-block rounded bg-pink-600 px-4 py-2 text-xs font-medium text-white hover:bg-pink-700"
+                              >
+                                  Complete
+                              </a>
+                          {% endif %}
+                      </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  {% endif %}
 
-    <br>
-    <br>
-    <br>
+  {% if confirmed_bookings %}
+    <div class="bg-white p-4 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Confirmed Bookings</h2>
+        <table class="min-w-full divide-gray-200 bg-white text-sm">
+          <thead class="text-left bg-gray-50 uppercase">
+            <tr class="text-center">
+              <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booking ID</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Provider</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked On</th>
+              <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked At</th>
+              <th scope="col"  class="px-4 py-2">Action</th>
+            </tr>
+          </thead>
 
-    <label for="datetime">Select date and time:</label>
-    <input type="datetime-local" id="datetime" name="datetime">
+          <tbody class="divide-y divide-gray-200">
+              {% for booking, service, provider_username, payment_id in confirmed_bookings %}
+                  <tr class="odd:bg-white even:bg-gray-50 text-center">
+                      <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ booking.id }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider_username }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.book_date.date() }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.created_at.date() }}</td>
+                      <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
+                          <a
+                            href="{{ url_for('customer.get_single_booking', cust_id=cust_id, booking_id=booking.id) }}"
+                            class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                          >
+                              Detail
+                          </a>
+                          {% if booking.status == booking_status_enum.CONFIRM.value %}
+                              <a
+                                href="{{ url_for('customer.go_to_payment_portal', cust_id=cust_id, payment_id=payment_id, next=url_for(request.endpoint, **request.view_args) ) }}"
+                                class="inline-block rounded bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700"
+                                >
+                                Pay
+                              </a>
+                          {% endif %}
+                      </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  {% endif %}
+</div>
 
 {% endblock section %}

@@ -1,4 +1,5 @@
 from datetime import datetime
+from application.core.models import Profile, User
 from application.extensions import db
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -17,7 +18,11 @@ class Customer(db.Model):
 
     @hybrid_property
     def username(self):
-        return self.user.username
+        return self.user.profile.full_name
+    
+    @hybrid_property
+    def full_name(self):
+        return self.user.profile.full_name
 
 
 class Booking(db.Model):
@@ -45,8 +50,7 @@ class Booking(db.Model):
     service = db.relationship('Service', back_populates='bookings')
     customer = db.relationship('Customer', back_populates='bookings')
     payment = db.relationship('CustomerPayment', back_populates='booking', uselist=False)
-    review = db.relationship('Review', uselist=False)
-    refund = db.relationship('Refund', back_populates='booking', uselist=False)
+    review = db.relationship('Review', back_populates='booking', uselist=False)
 
 
 class CustomerPayment(db.Model):
@@ -59,7 +63,8 @@ class CustomerPayment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False)
     status = db.Column(db.String(20), nullable=False)  # 'paid', 'pending', 'cancelled'
-    service_cost = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    service_fee = db.Column(db.Integer,  default=0)
     platform_fee = db.Column(db.Integer, default=0)
     transaction_fee = db.Column(db.Integer, default=0)
     discount = db.Column(db.Integer, default=0)
@@ -70,12 +75,17 @@ class CustomerPayment(db.Model):
 
     booking = db.relationship('Booking', back_populates='payment')
 
+
     @hybrid_property
     def total_amount(self):
-        return self.calculate_final_amount()
+        return self.amount + self.platform_fee + self.transaction_fee - self.discount
 
     def calculate_final_amount(self):
-        return round(self.service_cost + self.platform_fee + self.transaction_fee - self.discount, 2)
+        return round(self.amount + self.platform_fee + self.transaction_fee - self.discount, 2)
+
+    def calculate_provider_amount(self):
+        return round(self.amount - self.service_fee, 2)
+
 
 
 class Review(db.Model):
@@ -93,18 +103,21 @@ class Review(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
+    booking = db.relationship('Booking', back_populates='review')
 
-class Refund(db.Model):
-    __tablename__ = 'refunds'
 
-    id = db.Column(db.Integer, primary_key=True)
-    booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False)
-    transaction_id = db.Column(db.Integer, db.ForeignKey(CustomerPayment.id), nullable=False)
-    amount = db.Column(db.Float, nullable=False)  # Amount to be refunded
-    status = db.Column(db.String(20), default='Pending')  # 'Pending', 'Processed', 'Failed'
-    cancellation_charge = db.Column(db.Integer, default=0) # for customer cancellation
-    penalty = db.Column(db.Integer, default=0) # penalty on provider cancellation
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-    booking = db.relationship('Booking', back_populates='refund')
+# class Refund(db.Model):
+#     __tablename__ = 'refunds'
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False)
+#     transaction_id = db.Column(db.Integer, db.ForeignKey(CustomerPayment.id), nullable=False)
+#     amount = db.Column(db.Float, nullable=False)  # Amount to be refunded
+#     status = db.Column(db.String(20), default='Pending')  # 'Pending', 'Processed', 'Failed'
+#     cancellation_charge = db.Column(db.Integer, default=0) # for customer cancellation
+#     penalty = db.Column(db.Integer, default=0) # penalty on provider cancellation
+#     created_at = db.Column(db.DateTime, default=datetime.now)
+#     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+#     booking = db.relationship('Booking', back_populates='refund')

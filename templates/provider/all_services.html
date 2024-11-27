@@ -73,19 +73,20 @@
       <tr class="text-center">
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Title</th>
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Price /hr</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Availability</th>
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Listed</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Avg Rating</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Total Bookings</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Lifetime Earning</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Listed On</th>
         <th scope="col" class="px-4 py-2">Action</th>
       </tr>
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-        {% for service in services  %}
+        {% for service in services.items %}
         <tr class="odd:bg-white even:bg-gray-50 text-center">
             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ service.title }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.price }} ₹</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.availability }}</td>
             <td class="whitespace-nowrap px-4 py-2 ">
                 {% if not service.is_approved %}
                     <span
@@ -113,7 +114,10 @@
                     </span>
                 {% endif %}
             </td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.created_at.strftime("%Y-%m-%d %I:%M %p") }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.avg_rating }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.total_served_bookings }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.lifetime_earning }} ₹</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.created_at.date() }}</td>
             <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
                 <a
                     href="{{ url_for('provider.get_service', prov_id=prov_id, service_id=service.id) }}"
@@ -147,37 +151,46 @@
 </div>
 
 
+{% if services.total > services.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
   <div class="mt-2 flex items-center justify-between">
     <div>
-      <p>showing results</p>
+      <p>
+         showing <strong>{{ services.first }}</strong> to <strong>{{ services.last }}</strong> of <strong>{{ services.total }}</strong> results
+      </p>
     </div>
     <div class="space-x-2">
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                ← Previous
-            </a>
-        </button>
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                Next →
-            </a>
-        </button>
+        {% if services.has_prev %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('provider.get_all_services', prov_id=prov_id, page=services.prev_num ) }}">
+                    ← Previous
+                </a>
+            </button>
+        {% endif %}
+
+        {% if services.has_next %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('provider.get_all_services', prov_id=prov_id, page=services.next_num ) }}">
+                    Next →
+                </a>
+            </button>
+        {% endif %}
     </div>
   </div>
 </div>
+{% endif %}
+</section>
 {% else %}
 <div class="w-full h-full flex justify-center items-center mt-5">
     <h1 class="text-xl font-semibold">No services listed</h1>
 </div>
 {% endif %}
-</section>
 {% endblock section %}  
 
 {% block modals %}
@@ -259,13 +272,6 @@
                     <div class="col-span-2">
                         {{ form.description.label(for="description", class="block mb-2 text-sm
                         font-medium text-white") }} {{ form.description( id="description",
-                        class="bg-white border border-gray-300 text-gray-900 text-sm
-                        rounded-lg focus:ring-primary-600 focus:border-primary-600 block
-                        w-full p-2.5") }}
-                    </div>
-                    <div class="col-span-2">
-                        {{ form.details.label(for="details", class="block mb-2 text-sm
-                        font-medium text-white") }} {{ form.details( id="details",
                         class="bg-white border border-gray-300 text-gray-900 text-sm
                         rounded-lg focus:ring-primary-600 focus:border-primary-600 block
                         w-full p-2.5") }}

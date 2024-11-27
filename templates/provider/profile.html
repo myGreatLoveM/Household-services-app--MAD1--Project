@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block sidebar %}
+    {% include "components/provider_sidebar.html" %}
+{% endblock sidebar %}
+
+
+{% block section %}
+    <div class="container max-w-2xl mx-auto p-6 rounded-lg">
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="mb-5 flex items-center w-full justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Profile</h2>
+                    <h3 class="text-green-600">@{{ provider.username }}</h3>
+                </div>
+                <div>
+                    <h3>Joined on : {{ provider.created_at.date() }}</h3>
+                </div>
+            </div>
+            
+            <form action="{{ url_for('provider.profile', prov_id=provider.id) }}" method="POST">
+            <div class="flex flex-col gap-6">
+                <div>
+                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input type="text" name="full_name" value="{{ provider.user.profile.full_name }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" value="{{ provider.user.profile.email }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                <label class="block text-sm font-medium text-gray-700">Contact</label>
+                <input type="text" name="contact" value="{{ provider.user.profile.contact }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                <label class="block text-sm font-medium text-gray-700">Location</label>
+                <input type="text" name="location" value="{{ provider.user.profile.location }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                <label class="block text-sm font-medium text-gray-700">Bio</label>
+                <textarea name="bio" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">{{ provider.user.profile.bio }}</textarea>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Save Changes</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock section %}

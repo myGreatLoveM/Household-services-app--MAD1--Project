@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from sqlalchemy import UniqueConstraint
-from application.customers.models import Booking, Review
+from application.customers.models import Booking, CustomerPayment, Review
 from application.extensions import db
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from application.providers.enums import ProviderAvailabilityEnum
+from application.providers.enums import BookingStatusEnum, ProviderAvailabilityEnum
 
 
 class Provider(db.Model):
@@ -33,6 +33,85 @@ class Provider(db.Model):
     @hybrid_property
     def username(self):
         return self.user.username
+    
+    @hybrid_property
+    def total_active_services(self):
+        return (
+            db.session.query(
+                db.func.count(
+                    db.case(
+                        (db.and_(Service.is_approved==True, Service.is_blocked==False, Service.is_active==True), Service.id)
+                    )
+                )
+            )
+            .outerjoin(Service, Provider.services)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+    
+    @hybrid_property
+    def avg_rating(self):
+        return (
+            db.session.query(
+                db.func.coalesce(db.func.avg(Review.rating), 0)
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+
+    @hybrid_property
+    def total_served_bookings(self):
+        return (
+            db.session.query(
+                db.func.count(
+                    db.case(
+                        (Booking.status.notin_([BookingStatusEnum.PENDING.value, BookingStatusEnum.REJECT.value, BookingStatusEnum.CONFIRM.value]), Booking.id)
+                    )
+                )
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+    
+    @hybrid_property
+    def no_of_reviews(self):
+        return (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.count(Review.id), 0
+                )
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+
+    @hybrid_property
+    def top_review(self):
+        return (
+            db.session.query(
+                Review
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .order_by(Review.rating.desc(), Review.created_at.desc())
+            .first()
+        )
 
 
 class Service(db.Model):
@@ -69,35 +148,97 @@ class Service(db.Model):
     def avg_rating(self):
         return (
             db.session.query(
-                db.func.avg(
-                    db.case(
-                        (Review.id.isnot(None), Review.rating)
-                    )
-                )
+                db.func.coalesce(db.func.avg(Review.rating), 0)
             )
-            .join(Booking, Service.bookings)
+            .outerjoin(Booking, Service.bookings)
             .outerjoin(Review, Booking.review)
             .group_by(Service.id)
-            .filter(Service.id.is_(self.id), Booking.id.isnot(None), Review.id.isnot(None))
+            .filter(Service.id.is_(self.id))
             .scalar()
         )
-
 
     @hybrid_property
     def no_of_reviews(self):
         return (
             db.session.query(
+                db.func.coalesce(
+                    db.func.count(Review.id), 0
+                )
+            )
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id))
+            .scalar()
+        )
+    
+    @hybrid_property
+    def total_served_bookings(self):
+        return (
+            db.session.query(
                 db.func.count(
                     db.case(
-                        (Review.id.isnot(None), Review.id)
+                        (Booking.status.notin_([BookingStatusEnum.PENDING.value, BookingStatusEnum.REJECT.value, BookingStatusEnum.CONFIRM.value]), Booking.id)
                     )
                 )
             )
-            .join(Booking, Service.bookings)
-            .outerjoin(Review, Booking.review)
+            .outerjoin(Booking, Service.bookings)
             .group_by(Service.id)
-            .filter(Service.id.is_(self.id), Booking.id.isnot(None), Review.id.isnot(None))
+            .filter(Service.id.is_(self.id))
+            .scalar()
+        )
+    
+    @hybrid_property
+    def total_active_bookings(self):
+        return (
+            db.session.query(
+                db.func.count(
+                    db.case(
+                        (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), Booking.id)
+                    )
+                )
+            )
+            .outerjoin(Booking, Service.bookings)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id))
             .scalar()
         )
 
+    @hybrid_property
+    def top_review(self):
+        return (
+            db.session.query(
+                Review
+            )
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id))
+            .order_by(Review.rating.desc(), Review.created_at.desc())
+            .first()
+        )
 
+    @hybrid_property
+    def lifetime_earning(self):
+        total_amount, total_service_fee =  (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.amount)
+                        )
+                ), 0).label('total_amount'),
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.service_fee)
+                        )
+                ), 0).label('total_service_fee'),
+            )
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(CustomerPayment, Booking.payment)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id))
+            .first()
+        )
+        return total_amount - total_service_fee

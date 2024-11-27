@@ -23,21 +23,21 @@
         <!-- Customer Info -->
         <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
             <h3 class="text-lg font-medium text-gray-700 mb-4">Customer Information</h3>
-            <p class="text-gray-600">Name: <span class="font-semibold">{{ booking.customer.username }}</span></p>
-            <p class="text-gray-600">Location: <span class="font-semibold">{{ booking.customer.user.profile.location }}</span></p>
+            <p class="text-gray-600">Name: <span class="font-semibold">{{ customer.username }}</span></p>
+            <p class="text-gray-600">Location: <span class="font-semibold">{{ profile.location }}</span></p>
             {% if booking.payment.status == payment_status_enum.PAID.value %}
-                <p class="text-gray-600">Email: <span class="font-semibold">{{ booking.customer.user.profile.email }}</span></p>
-                <p class="text-gray-600">Contact: <span class="font-semibold">{{ booking.customer.user.profile.contact }}</span></p>
+                <p class="text-gray-600">Email: <span class="font-semibold">{{ profile.email }}</span></p>
+                <p class="text-gray-600">Contact: <span class="font-semibold">{{ profile.contact }}</span></p>
             {% endif %}
         </div>
 
         <!-- Service Info -->
         <div class="bg-gray-50 p-6 rounded-lg shadow-sm space-y-2">
             <h3 class="text-lg font-medium text-gray-700 mb-4">Service Details</h3>
-            <p class="text-gray-600">Service Title: <span class="font-semibold">{{ booking.service.title }}</span></p>
-            <p class="text-gray-600">Category: <span class="font-semibold">{{ booking.service.provider.category.name }}</span></p>
-            <p class="text-gray-600">Price: <span class="font-semibold text-blue-500">{{ booking.service.price }} ₹/hr</span></p>
-            <p class="text-gray-600">Time Required: <span class="font-semibold">{{ booking.service.time_required_hr }} hrs</span></p>
+            <p class="text-gray-600">Service Title: <span class="font-semibold">{{ service.title }}</span></p>
+            <p class="text-gray-600">Category: <span class="font-semibold">{{ service.category.name }}</span></p>
+            <p class="text-gray-600">Price: <span class="font-semibold text-blue-500">{{ service.price }} ₹/hr</span></p>
+            <p class="text-gray-600">Time Required: <span class="font-semibold">{{ service.time_required_hr }} hrs</span></p>
         </div>
     </div>
 
@@ -81,6 +81,29 @@
             {% endif %}
         </div>
         {% endif %}
+
+        {% if booking.review %}
+            <div class="mt-4">
+                <h4 class="text-md font-semibold text-gray-700 mb-2">Review & Ratings</h4>
+                <div class="space-y-4">
+                    <!-- Review 1 -->
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <p class="text-sm text-gray-00">{{ booking.review.created_at.strftime("%Y-%m-%d %I:%M %p")}}</p>
+                            <div class="flex items-center">
+                                {% for _ in range(booking.review.rating)  %}
+                                <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.283 3.953a1 1 0 00.95.691h4.17c.969 0 1.371 1.24.588 1.81l-3.383 2.457a1 1 0 00-.364 1.118l1.283 3.953c.3.921-.755 1.688-1.54 1.118l-3.383-2.457a1 1 0 00-1.175 0l-3.383 2.457c-.785.57-1.839-.197-1.54-1.118l1.283-3.953a1 1 0 00-.364-1.118L2.268 9.381c-.783-.57-.381-1.81.588-1.81h4.17a1 1 0 00.95-.691l1.283-3.953z"></path>
+                                </svg>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="overflow-wrap text-sm text-gray-600 mt-2 ">{{ booking.review.comment }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
 
 

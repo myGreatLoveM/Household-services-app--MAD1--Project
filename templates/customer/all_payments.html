@@ -6,9 +6,8 @@
 
 
 {% block section %}
-{% if payments.items %}
 <section class="mx-auto w-full max-w-7xl px-4 py-4">
-<div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+    <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
     <div>
       <h2 class="text-lg font-semibold">All Payments</h2>
       <p class="mt-1 text-sm text-gray-700">
@@ -46,7 +45,7 @@
     </div>
 </div>
 
-
+{% if payments.items %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
   <table class="min-w-full divide-gray-200 bg-white text-sm">
     <thead class="text-left bg-gray-50 uppercase">
@@ -69,7 +68,7 @@
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.id }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.title }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.provider.username }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.service_cost }} ₹</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.calculate_final_amount() }} ₹</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.book_date.date() }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.updated_at.date() }}</td>
                 <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">

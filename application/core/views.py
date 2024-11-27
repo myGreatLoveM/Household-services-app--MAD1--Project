@@ -1,12 +1,12 @@
 from flask import current_app, render_template, request
 from flask_login import current_user
 
+from application.extensions import db
 from application.core.models import Profile, User
 from application.customers.forms import BookingForm
 from application.admin.models import Category
 from . import core
 from application.providers.models import Service, Provider
-from application.extensions import db
 from werkzeug.exceptions import NotFound, InternalServerError
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -63,6 +63,7 @@ def get_single_category(cat_id):
         if category is None:
             raise NotFound('No category found')
     except SQLAlchemyError as e:
+        print(e)
         raise InternalServerError()
     return render_template('core/single_category.html', category=category)
 
@@ -82,6 +83,7 @@ def get_all_listed_services():
             .join(User, Provider.user)
             .join(Profile, User.profile)
             .filter(
+                Provider.is_approved.is_(True),
                 Provider.is_blocked.is_(False), 
                 Service.is_approved.is_(True),
                 Service.is_blocked.is_(False), 
@@ -98,8 +100,6 @@ def get_all_listed_services():
 
         services = active_services_q.paginate(page=page, per_page=per_page, error_out=False)
 
-        print(services.items[0][0].avg_rating)
-
     except SQLAlchemyError as e:
         raise InternalServerError()
     return render_template('core/all_services.html', services=services)
@@ -108,15 +108,44 @@ def get_all_listed_services():
 @core.route('/main/services/<int:service_id>')
 def get_listed_service(service_id):
     form = BookingForm()
-    service = Service.query.filter_by(id=service_id, is_approved=True, is_blocked=False, is_active=True).first()
-    if service is None:
-        raise NotFound('Service not found')
-    return render_template('core/single_service.html', service=service, form=form)
+    try:
+        service, provider = (
+            db.session.query(
+                Service,
+                Provider
+            )
+            .join(Provider, Service.provider)
+            .filter(
+                Service.id == service_id, Service.is_approved == True, Service.is_blocked == False, Service.is_active == True
+            )
+            .first()
+        )
+        if service is None:
+            raise NotFound('Service not found')
+    except SQLAlchemyError as e:
+        raise InternalServerError()
+    return render_template('core/single_service.html', service=service, provider=provider, form=form)
 
 
 @core.route('/main/providers/<int:prov_id>')
 def get_verified_provider(prov_id):
-    provider = Provider.query.filter_by(id=prov_id, is_approved=True, is_blocked=False).first()
-    if provider is None:
-        raise NotFound('Provider not found')
-    return render_template('core/provider_profile.html', provider=provider)
+    try:
+        provider, profile = (
+            db.session.query(
+                Provider,
+                Profile,
+            )
+            .join(User, Provider.user)
+            .join(Profile, User.profile)
+            .filter(
+                Provider.id==prov_id, Provider.is_approved==True, Provider.is_blocked==False
+            )
+            .first()
+        )
+        if provider is None:
+            raise NotFound('Provider not found')
+        
+    except SQLAlchemyError as e:
+        print(e)
+        raise InternalServerError()
+    return render_template('core/provider_profile.html', provider=provider, profile=profile)

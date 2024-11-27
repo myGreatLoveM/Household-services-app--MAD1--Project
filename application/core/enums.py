@@ -7,5 +7,5 @@ class UserRoleEnum(Enum):
 
 
 class UserGenderEnum(Enum):
-    MALE = 'male'
-    FEMALE = 'female'
+    MALE = 'Male'
+    FEMALE = 'Female'

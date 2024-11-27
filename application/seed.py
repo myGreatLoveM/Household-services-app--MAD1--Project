@@ -16,7 +16,14 @@ def create_initial_data():
     database_created = user_table_created and admin_table_created and categories_table_created
     
     if database_created:
-        user_admin = db.session.query(User, Admin).join(Admin, User.admin).filter(User.role.is_(UserRoleEnum.ADMIN.value)).first()
+        user_admin = (
+            db.session.query(
+                User, Admin
+            )
+            .join(Admin, User.admin)
+            .filter(User.role.is_(UserRoleEnum.ADMIN.value))
+            .first()
+        )
 
         if user_admin is None:
             super_user = User(username='admin', role=UserRoleEnum.ADMIN.value)

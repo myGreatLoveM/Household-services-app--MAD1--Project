@@ -29,7 +29,7 @@
       </div>
       <div class="py-3 flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Service Price</dt>
-        <dd class="text-sm text-gray-900">{{ payment.service_cost }} ₹</dd>
+        <dd class="text-sm text-gray-900">{{ payment.amount }} ₹</dd>
       </div>
       <div class="py-3 flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Platform charge</dt>
@@ -54,13 +54,14 @@
     </dl>
   </div>
 
-  <form id="add-service-form" action="{{ url_for('customer.handle_payment', cust_id=cust_id, payment_id=payment.id) }}" method="post" class="px-6 ">
+  <form id="add-service-form" action="{{ url_for('customer.handle_payment', cust_id=cust_id, payment_id=payment.id, next=next) }}" method="post" class="px-6 ">
     {{ form.hidden_tag() }}
 
     <div class="mb-4">
         <div class="col-span-2">
             {{ form.method.label(for="method", class="block mb-2 text-sm font-medium
-            text-gray-500") }} {{ form.method(id="method", class="bg-white
+            text-gray-500") }} 
+            {{ form.method(id="method", class="bg-white
             border border-gray-300 text-sm rounded-lg focus:ring-primary-600
             focus:border-primary-600 block w-full p-2.5", ) }}
         </div>

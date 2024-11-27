@@ -1,19 +1,19 @@
 {% extends "layout.html" %}
 
 {% block sidebar %}
-    {% include "components/customer_sidebar.html" %}
+    {% include "components/provider_sidebar.html" %}
 {% endblock sidebar %}
 
 
 {% block section %}
 
 {% if payments.items %}
-<section class="mx-auto w-full h-full max-w-7xl px-4 py-4">
+<section class="mx-auto w-full max-w-7xl px-4 py-4">
 <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
     <div>
-      <h2 class="text-lg font-semibold">Pending payments</h2>
+      <h2 class="text-lg font-semibold">All Payments</h2>
       <p class="mt-1 text-sm text-gray-700">
-        This is a list of all pending payments for confirmed booking
+        This is a list of all payments regarding bookings 
       </p>
     </div>
 
@@ -40,51 +40,69 @@
     </div>
 </div>
 
-
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
   <table class="min-w-full divide-gray-200 bg-white text-sm">
     <thead class="text-left bg-gray-50 uppercase">
       <tr class="text-center">
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Payment ID</th>
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booking ID</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Provider</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Price</th>
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked</th>
-
-        <th scope="col" class="px-4 py-2">Action</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Customer</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Amount</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Admin Approved</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booked On</th>
+        <th scope="col"  class="px-4 py-2">Action</th>
       </tr>
     </thead>
 
-
+    
     <tbody class="divide-y divide-gray-200">
-        {% for payment, booking, service, provider in payments.items %}
+        {% for payment, booking, service, customer in payments.items %}
             <tr class="odd:bg-white even:bg-gray-50 text-center">
+                <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ payment.id }}</td>
                 <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ booking.id }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.username }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.amount }} ₹</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ customer.username }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                    {{ payment.calculate_provider_amount() }}
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                    {% if payment.booking.status == 'closed' %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700"
+                        >
+                        approved
+                        </span>
+                    {% else %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-yellow-500 px-2.5 py-0.5 text-sm text-yellow-700"
+                        >
+                        pending
+                        </span>
+                    {% endif %}
+                    
+                </td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.book_date.date() }}</td>
-
                 <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
-                    <a
-                        href="{{ url_for('customer.go_to_payment_portal', cust_id=cust_id, payment_id=payment.id) }}"
-                        class="inline-block rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
-                    >
-                        Pay
-                    </a>
-                    <a
-                        href="#"
-                        class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700"
-                    >
-                        Cancel
-                    </a>
+                        <a
+                            href="{{ url_for('provider.get_single_booking', prov_id=prov_id, booking_id=booking.id) }}"
+                            class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                        >
+                            Detail
+                        </a>
+                        {% if booking.status == booking_status_enum.COMPLETE.value %}
+                        <a href="{{ url_for('provider.handle_booking', prov_id=prov_id, booking_id=booking.id, status=booking_status_enum.CLOSE.value) }}" 
+                            class="inline-block rounded bg-zinc-600 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-700"
+                        >
+                            Close
+                        </a>
+                        {% endif %}
                 </td>
             </tr>
         {% endfor %}
     </tbody>
   </table>
 </div>
-
 
 {% if payments.total > payments.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
@@ -100,7 +118,7 @@
             type="button"
             class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             >
-                <a href="{{ url_for('customer.get_all_pending_payments', cust_id=cust_id, page=payments.prev_num ) }}">
+                <a href="{{ url_for('provider.get_all_payments', prov_id=prov_id, page=payments.prev_num ) }}">
                     ← Previous
                 </a>
             </button>
@@ -111,7 +129,7 @@
             type="button"
             class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             >
-                <a href="{{ url_for('customer.get_all_pending_payments', cust_id=cust_id, page=payments.next_num ) }}">
+                <a href="{{ url_for('provider.get_all_payments', prov_id=prov_id, page=payments.next_num ) }}">
                     Next →
                 </a>
             </button>
@@ -120,11 +138,13 @@
   </div>
 </div>
 {% endif %}
+
+
 </section>
 {% else %}
 <div class="w-full h-full flex justify-center items-center">
-    <h1 class="text-xl font-semibold">No pending payments</h1>
+    <h1 class="text-xl font-semibold">No Payments</h1>
 </div>
 {% endif %}
-{% endblock section %}
 
+{% endblock section %}

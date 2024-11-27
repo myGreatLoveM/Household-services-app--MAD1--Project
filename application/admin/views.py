@@ -3,9 +3,9 @@ from flask_login import current_user, login_required
 from application.decorators import role_required
 from application.admin.forms import CategoryRegisterForm
 from application.providers.enums import BookingStatusEnum, ServiceStatusEnum
+from application.extensions import db
 from . import admin
 from .models import Admin, Category
-from application.extensions import db
 from application.core.models import  Profile, User
 from application.core.enums import UserRoleEnum
 from application.providers.models import Provider, Service
