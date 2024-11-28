@@ -18,7 +18,7 @@ class Customer(db.Model):
 
     @hybrid_property
     def username(self):
-        return self.user.profile.full_name
+        return self.user.username
     
     @hybrid_property
     def full_name(self):
@@ -83,8 +83,13 @@ class CustomerPayment(db.Model):
     def calculate_final_amount(self):
         return round(self.amount + self.platform_fee + self.transaction_fee - self.discount, 2)
 
-    def calculate_provider_amount(self):
-        return round(self.amount - self.service_fee, 2)
+    @hybrid_property
+    def final_provider_amount(self):
+        return self.amount - self.service_fee
+    
+    @hybrid_property
+    def final_admin_amount(self):
+        return self.service_fee + self.platform_fee + self.transaction_fee
 
 
 

@@ -16,27 +16,7 @@
       </p>
     </div>
 
-    <div class="flex items-center gap-10">
-        <div class="relative inline-block text-left">
-            <button id="dropdownButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="true" aria-haspopup="true">
-                Filter by type
-                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-                </svg>
-            </button>
 
-            <!-- Dropdown menu, show/hide based on menu state. -->
-            <div id="dropdownMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
-                <div class="py-1" role="none">
-                    <!-- Active: "bg-gray-100", Not Active: "" -->
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 
@@ -48,7 +28,7 @@
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Category</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Customer</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Price</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service Price</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Payment Status</th>
         <th scope="col"  class="px-4 py-2">Action</th>
@@ -56,28 +36,70 @@
     </thead>
 
     <tbody class="divide-y divide-gray-200 text-center ">
-        {% for booking in bookings  %}
+        {% for booking, service, customer in bookings  %}
             <tr class="odd:bg-white even:bg-gray-50">
                 <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ booking.id }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.service.title }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.service.provider.category.name }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.customer.user.username }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.service.price }} ₹</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">pending</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">pending</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.category }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ customer.full_name }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.price }} ₹</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                    {% if booking.status == booking_status_enum.REJECT.value  %}  
+                        <span
+                        class="whitespace-nowrap rounded-full border border-red-500 px-2.5 py-0.5 text-sm text-red-700"
+                        >
+                        rejected
+                        </span>
+                    {% elif booking.status == booking_status_enum.CONFIRM.value  %}  
+                        <span
+                        class="whitespace-nowrap rounded-full border border-purple-500 px-2.5 py-0.5 text-sm text-purple-700 bg-purple-100"
+                        >
+                        confirmed
+                        </span>
+                    {% elif booking.status == booking_status_enum.ACTIVE.value  %}  
+                        <span
+                        class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700 bg-green-100"
+                        >
+                        active
+                        </span>
+                    {% elif booking.status == booking_status_enum.COMPLETE.value  %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-pink-500 px-2.5 py-0.5 text-sm text-pink-700 bg-pink-100"
+                        >
+                        completed
+                        </span>
+                    {% elif booking.status == booking_status_enum.CLOSE.value  %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-zinc-500 px-2.5 py-0.5 text-sm text-zinc-700 bg-zinc-100"
+                        >
+                        closed
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                    {% if booking.payment.status == payment_status_enum.PENDING.value %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-yellow-500 px-2.5 py-0.5 text-sm text-yellow-700"
+                        >
+                        pending
+                        </span>
+                    {% elif booking.payment.status == payment_status_enum.PAID.value %}
+                        <span
+                        class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700"
+                        >
+                        paid
+                        </span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
                 <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
-                <a
-                    href="{{ url_for('admin.get_booking', booking_id=booking.id) }}"
-                    class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
-                >
-                    View
-                </a>
-                <a
-                    href="#"
-                    class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
-                >
-                    Block
-                </a>
+                    <a
+                        href="{{ url_for('admin.get_booking', booking_id=booking.id) }}"
+                        class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                    >
+                        View
+                    </a>
                 </td>
             </tr>
         {% endfor %}
@@ -86,31 +108,40 @@
 </div>
 
 
+{% if bookings.total > bookings.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
   <div class="mt-2 flex items-center justify-between">
     <div>
-      <p>showing results</p>
+      <p>
+        showing <strong>{{ bookings.first }}</strong> to <strong>{{ bookings.last }}</strong> of <strong>{{ bookings.total }}</strong> results
+      </p>
     </div>
     <div class="space-x-2">
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                ← Previous
-            </a>
-        </button>
-        <button
-        type="button"
-        class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-            <a href="#">
-                Next →
-            </a>
-        </button>
+        {% if bookings.has_prev %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_all_bookings', page=bookings.prev_num ) }}">
+                    ← Previous
+                </a>
+            </button>
+        {% endif %}
+
+        {% if bookings.has_next %}
+            <button
+            type="button"
+            class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            >
+                <a href="{{ url_for('admin.get_all_bookings', page=bookings.next_num ) }}">
+                    Next →
+                </a>
+            </button>
+        {% endif %}
     </div>
   </div>
 </div>
+{% endif %}
 
 </section>
 

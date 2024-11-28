@@ -35,6 +35,10 @@ class Provider(db.Model):
         return self.user.username
     
     @hybrid_property
+    def full_name(self):
+        return self.user.profile.full_name
+    
+    @hybrid_property
     def total_active_services(self):
         return (
             db.session.query(
@@ -50,6 +54,7 @@ class Provider(db.Model):
             .scalar()
         )
     
+
     @hybrid_property
     def avg_rating(self):
         return (
@@ -63,7 +68,44 @@ class Provider(db.Model):
             .filter(Provider.id.is_(self.id))
             .scalar()
         )
+    
+    
 
+
+    @hybrid_property
+    def no_of_reviews(self):
+        return (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.count(Review.id), 0
+                )
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+    
+    @hybrid_property
+    def total_active_bookings(self):
+        return (
+            db.session.query(
+                db.func.count(
+                    db.case(
+                        (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), Booking.id)
+                    )
+                )
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(Review, Booking.review)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .scalar()
+        )
+    
     @hybrid_property
     def total_served_bookings(self):
         return (
@@ -83,22 +125,6 @@ class Provider(db.Model):
         )
     
     @hybrid_property
-    def no_of_reviews(self):
-        return (
-            db.session.query(
-                db.func.coalesce(
-                    db.func.count(Review.id), 0
-                )
-            )
-            .outerjoin(Service, Provider.services)
-            .outerjoin(Booking, Service.bookings)
-            .outerjoin(Review, Booking.review)
-            .group_by(Provider.id)
-            .filter(Provider.id.is_(self.id))
-            .scalar()
-        )
-
-    @hybrid_property
     def top_review(self):
         return (
             db.session.query(
@@ -112,6 +138,59 @@ class Provider(db.Model):
             .order_by(Review.rating.desc(), Review.created_at.desc())
             .first()
         )
+
+    @hybrid_property
+    def lifetime_earning(self):
+        total_amount, total_service_fee =  (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.amount)
+                        )
+                ), 0).label('total_amount'),
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.service_fee)
+                        )
+                ), 0).label('total_service_fee'),
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(CustomerPayment, Booking.payment)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .first()
+        )
+        return total_amount - total_service_fee
+    
+
+    @hybrid_property
+    def pending_earning(self):
+        pending_amount, pending_service_fee =  (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.amount)
+                        )
+                ), 0).label('pending_amount'),
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.service_fee)
+                        )
+                ), 0).label('pending_service_fee'),
+            )
+            .outerjoin(Service, Provider.services)
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(CustomerPayment, Booking.payment)
+            .group_by(Provider.id)
+            .filter(Provider.id.is_(self.id))
+            .first()
+        )
+        return pending_amount - pending_service_fee
 
 
 class Service(db.Model):
@@ -142,7 +221,8 @@ class Service(db.Model):
 
     @hybrid_property
     def category(self):
-        return self.provider.category
+        return self.provider.category.name
+    
 
     @hybrid_property
     def avg_rating(self):
@@ -156,7 +236,7 @@ class Service(db.Model):
             .filter(Service.id.is_(self.id))
             .scalar()
         )
-
+    
     @hybrid_property
     def no_of_reviews(self):
         return (
@@ -242,3 +322,29 @@ class Service(db.Model):
             .first()
         )
         return total_amount - total_service_fee
+    
+
+    @hybrid_property
+    def pending_earning(self):
+        pending_amount, pending_service_fee =  (
+            db.session.query(
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.amount)
+                        )
+                ), 0).label('pending_amount'),
+                db.func.coalesce(
+                    db.func.sum(
+                        db.case(
+                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.service_fee)
+                        )
+                ), 0).label('pending_service_fee'),
+            )
+            .outerjoin(Booking, Service.bookings)
+            .outerjoin(CustomerPayment, Booking.payment)
+            .group_by(Service.id)
+            .filter(Service.id.is_(self.id))
+            .first()
+        )
+        return pending_amount - pending_service_fee

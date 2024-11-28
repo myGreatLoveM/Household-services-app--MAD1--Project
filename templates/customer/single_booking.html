@@ -74,6 +74,10 @@
             <h3 class="text-lg font-medium text-gray-700 mb-4">Payment Information</h3>
             <p class="text-gray-600">Status: <span class="font-semibold text-green-500">{{ booking.payment.status }}</span></p>
             {% if booking.payment.status == payment_status_enum.PAID.value %}
+                <p class="text-gray-600">Original amount: <span class="font-semibold ">{{ booking.payment.amount }} ₹</span></p>
+                <p class="text-gray-600">Platform fee: <span class="font-semibold ">{{ booking.payment.platform_fee }} ₹</span></p>
+                <p class="text-gray-600">Transaction fee: <span class="font-semibold ">{{ booking.payment.transaction_fee }} ₹</span></p>
+                <p class="text-gray-600">Final amount: <span class="font-semibold text-blue-500">{{ booking.payment.total_amount }} ₹</span></p>
                 <p class="text-gray-600">Date: <span class="font-semibold">{{ booking.payment.updated_at.strftime("%Y-%m-%d %I:%M %p") }} </span></p>
             {% endif %}
         </div>

@@ -6,7 +6,56 @@
 
 
 {% block section %}
-<h1>Admin Dashboard</h1>
+<div class="container h-full mx-auto px-6 rounded-lg">
+    <div class="bg-white rounded-lg mb-8">
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Total Pending Payments</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ admin_dashboard_metrics.total_pending_payments }} ₹</p>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Total Payments Handout</p>
+                <p class="text-2xl font-bold text-yellow-600">{{ admin_dashboard_metrics.total_payments_handout }} ₹</p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Total Revenue Generated</p>
+                <p class="text-2xl font-bold text-yellow-600">{{ admin_dashboard_metrics.total_revenue_generated }} ₹</p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Total Booking Payments</p>
+                <p class="text-2xl font-bold text-yellow-600">{{ admin_dashboard_metrics.total_payments_made }} ₹</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg mb-8">
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Active Providers : 
+                    <span class="text-normal font-bold text-green-600">{{ admin_dashboard_metrics.active_providers }}</span>
+                </p>
+                <p class="text-lg font-bold text-gray-700">Active Customers:
+                    <span class="text-normal font-bold text-green-600">{{ admin_dashboard_metrics.active_customers }}</span>
+                </p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Active Services</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ admin_dashboard_metrics.active_services }}</p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Active Bookings</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ admin_dashboard_metrics.active_bookings }}</p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="text-lg font-bold text-gray-700">Total Bookings</p>
+                <p class="text-2xl font-bold text-green-600">{{ admin_dashboard_metrics.total_bookings }}</p>
+            </div>
+        </div>
+    </div>
+
+
+</div>
 
 {% endblock section %}
 

@@ -1,6 +1,7 @@
 from flask import current_app, render_template, request
 from flask_login import current_user
 
+from application.customers.models import Review
 from application.extensions import db
 from application.core.models import Profile, User
 from application.customers.forms import BookingForm
@@ -68,13 +69,15 @@ def get_single_category(cat_id):
     return render_template('core/single_category.html', category=category)
 
 
-@core.route('/main/services')
+@core.route('/main/services', methods=['GET', 'POST'])
 def get_all_listed_services():
     cat_id = request.args.get('cat_id', None, type=int)
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
 
     try:
+        categories = Category.query.all()
+
         active_services_q = (
             db.session.query(
                 Service, Provider, Profile
@@ -98,11 +101,33 @@ def get_all_listed_services():
                 .filter(Category.id.is_(cat_id))
             )
 
+        if request.method == 'POST':
+            selected_categories = request.form.getlist('category', None)
+            min_price = request.form.get('min_price', type=int)
+            max_price = request.form.get('max_price', type=int)
+    
+            search_by = request.form.get('search_by', None)
+            print(search_by)
+            if selected_categories:
+                active_services_q = active_services_q.join(Category, Provider.category).filter(Category.name.in_(selected_categories))
+
+            if min_price is not None:
+                active_services_q = active_services_q.filter(Service.price >= min_price)
+            if max_price is not None:
+                active_services_q = active_services_q.filter(Service.price <= max_price)
+
+            if search_by is not None:
+                active_services_q = active_services_q.filter(
+                    User.username.like(f'%{search_by}%') | 
+                    Profile.location.like(f'%{search_by}%') | 
+                    Profile.full_name.like(f'%{search_by}%') 
+                )
+
         services = active_services_q.paginate(page=page, per_page=per_page, error_out=False)
 
     except SQLAlchemyError as e:
         raise InternalServerError()
-    return render_template('core/all_services.html', services=services)
+    return render_template('core/all_services.html', services=services, categories=categories)
 
 
 @core.route('/main/services/<int:service_id>')

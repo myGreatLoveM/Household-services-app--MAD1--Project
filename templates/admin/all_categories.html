@@ -17,46 +17,6 @@
     </div>
 
     <div class="flex items-center gap-10">
-        <div class="relative inline-block text-left">
-            <button id="dropdownFilterButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" aria-expanded="true" aria-haspopup="true">
-                Filter by type
-                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-                </svg>
-            </button>
-
-            <!-- Dropdown menu, show/hide based on menu state. -->
-            <div id="dropdownFilterMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownFilterButton">
-                <div class="py-1" role="none">
-                    <!-- Active: "bg-gray-100", Not Active: "" -->
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="relative inline-block text-left">
-            <button id="dropdownSortButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 " aria-expanded="true" aria-haspopup="true">
-                Sort by
-                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-                </svg>
-            </button>
-
-            <!-- Dropdown menu, show/hide based on menu state. -->
-            <div id="dropdownSortMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownSortButton">
-                <div class="py-1" role="none">
-                    <!-- Active: "bg-gray-100", Not Active: "" -->
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
-                </div>
-            </div>
-        </div>
-
         <button
         type="button"
         id="add-category-btn"
@@ -72,33 +32,27 @@
   <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
     <thead class="text-left bg-gray-50 uppercase">
       <tr class="text-center">
-        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Id</th>
+        <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Category Id</th>
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Name</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Base price /hr</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Min time /hr</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Providers</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Services</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Active Providers</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Active Services</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Total Bookings</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Listed</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Action</th>
       </tr>
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-        {% for category, active_providers, active_services in categories.items  %}
+        {% for category, active_providers, active_services, total_bookings in categories.items  %}
         <tr class="odd:bg-white even:bg-gray-50 text-center">
             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ category.id }}</td>
             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ category.name }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.base_price }} ₹</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.min_time_hr }}hr</td>
             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ active_providers }}</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
-                {% if active_services %}
-                    {{ active_services }}
-                {% else %}
-                    0
-                {% endif %}
-            </td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.created_at.strftime("%Y-%m-%d %I:%M %p") }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ active_services }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ total_bookings }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ category.created_at.strftime("%b, %d-%Y") }}</td>
             <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
                 <a href="{{ url_for('admin.get_category', category_id=category.id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     View
@@ -289,42 +243,6 @@
         closeModalBtn.click()
     })
 
-
-    document.getElementById('dropdownFilterButton').addEventListener('click', function(event) {
-            const menu = document.getElementById('dropdownFilterMenu');
-            const button = event.currentTarget;
-            menu.classList.toggle('hidden');
-            button.classList.toggle('bg-gray-100');
-            button.classList.toggle('text-gray-900');
-        })
-
-    document.addEventListener('click', function(event) {
-        const menu = document.getElementById('dropdownFilterMenu');
-        const button = document.getElementById('dropdownFilterButton');
-        if (!button.contains(event.target) && !menu.contains(event.target)) {
-            menu.classList.add('hidden');
-            button.classList.remove('bg-gray-100');
-            button.classList.remove('text-gray-900');
-        }
-    })
-
-    document.getElementById('dropdownSortButton').addEventListener('click', function(event) {
-            const menu = document.getElementById('dropdownSortMenu');
-            const button = event.currentTarget;
-            menu.classList.toggle('hidden');
-            button.classList.toggle('bg-gray-100');
-            button.classList.toggle('text-gray-900');
-        })
-
-    document.addEventListener('click', function(event) {
-        const menu = document.getElementById('dropdownSortMenu');
-        const button = document.getElementById('dropdownSortButton');
-        if (!button.contains(event.target) && !menu.contains(event.target)) {
-            menu.classList.add('hidden');
-            button.classList.remove('bg-gray-100');
-            button.classList.remove('text-gray-900');
-        }
-    })
 </script>
 
 {% endblock script %}

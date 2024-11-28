@@ -8,66 +8,45 @@
 <!-- Main Services Page Container -->
 <div class="min-h-screen py-6">
     <div class="max-w-7xl mx-auto">
-        <div class="relative max-w-xl  ml-auto flex items-center gap-5">
+        <form method="POST" action="{{ url_for('core.get_all_listed_services', **request.view_args) }}" class="relative max-w-xl ml-auto flex items-center gap-5">
             <input 
                 type="text" 
+                name="search_by"
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" 
                 placeholder="Search services by name, location, or rating"
                 id="search-input ">
-            <button class="px-6 bg-fuchsia-500 text-white font-bold py-2 rounded-lg hover:bg-fuchsia-700">Search</button>
-            
-        </div>
+            <button type="submit" class="px-6 bg-fuchsia-500 text-white font-bold py-2 rounded-lg hover:bg-fuchsia-700">Search</button>
+        </form>
         <div class="flex mt-5">
-            <!-- Sidebar: Filter Section -->
             <div class="w-1/4 bg-white p-6 border rounded-lg shadow-md mr-6 h-fit">
                 <h2 class="text-xl font-semibold mb-4">Filter Services</h2>
 
-                <!-- Filter by Category -->
-                <div class="mb-6 ">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Category</h3>
-                    <ul class="space-y-2">
-                        <!-- Example Category Options -->
-                        <li>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Cleaning</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Plumbing</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Electrical</span>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Filter by Price -->
-                <div class="mb-6">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Price Range</h3>
-                    <div class="flex gap-2 mb-2">
-                        <input type="number" placeholder="$ Min" class="w-1/2 px-3 py-2 bg-gray-100 rounded-lg border">
-                        <input type="number" placeholder="$ Max" class="w-1/2 px-3 py-2 bg-gray-100 rounded-lg border">
+               <form method="POST" action="{{ url_for('core.get_all_listed_services', **request.view_args) }}">
+                    <div class="mb-6">
+                        <h3 class="text-md font-medium text-gray-700 mb-2">Category</h3>
+                        <ul class="space-y-2">
+                            {% for category in categories  %}
+                                <li>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="category" value="{{ category.name }}" class="form-checkbox h-4 w-4 text-blue-600">
+                                        <span class="ml-2 text-gray-700">{{ category.name }}</span>
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <button class="w-full mt-5 bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Apply</button>
-                </div>
 
-                <!-- Sort by -->
-                <div class="mb-6">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Sort By</h3>
-                    <select class="w-full bg-gray-100 p-2 rounded-lg border">
-                        <option>Most Popular</option>
-                        <option>Highest Rating</option>
-                        <option>Lowest Price</option>
-                        <option>Newest</option>
-                    </select>
-                </div>
+                    <!-- Price Range -->
+                    <div class="mb-6">
+                        <h3 class="text-md font-medium text-gray-700 mb-2">Price Range</h3>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" name="min_price" min=0 placeholder="₹ Min" class="w-1/2 px-3 py-2 bg-gray-100 rounded-lg border">
+                            <input type="number" name="max_price" min=0 placeholder="₹ Max" class="w-1/2 px-3 py-2 bg-gray-100 rounded-lg border">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-5 bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Apply</button>
+                </form>
             </div>
 
             <!-- Main Content: Service Cards Grid -->
@@ -93,7 +72,7 @@
                                         <span class="text-sm text-gray-500">⏱ 60 mins</span>
                                         <p class="text-sm text-gray-500">Base rate: <span class="text-blue-600">{{ service.price }} ₹</span></p>
                                     </div>
-                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Verified</span>
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">{{ provider.category.name }}</span>
                                 </div>
                                 
                                 <!-- Provider Information -->
@@ -130,6 +109,7 @@
                 </div>
             </div>
         </div>
+
 
          {% if services.total > services.per_page %}
         <div class="w-full border-t border-gray-300 mt-5">

@@ -18,8 +18,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound, BadRequest, InternalServerError
 
 
-
-
 @provider.route('/dashboard')
 @login_required
 @role_required(UserRoleEnum.PROVIDER.value)
@@ -53,27 +51,15 @@ def dashboard(prov_id):
                 db.func.coalesce(
                     db.func.sum(
                         db.case(
-                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.amount)
+                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.final_provider_amount)
                         )
                 ), 0).label('total_lifetime_earning'),
                 db.func.coalesce(
                     db.func.sum(
                         db.case(
-                            (Booking.status.in_([BookingStatusEnum.CLOSE.value]), CustomerPayment.service_fee)
-                        )
-                ), 0).label('total_lifetime_earning_service_feee'),
-                db.func.coalesce(
-                    db.func.sum(
-                        db.case(
-                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.amount)
+                            (db.and_(CustomerPayment.status==CustomerPaymentStatusEnum.PAID.value, Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value])), CustomerPayment.final_provider_amount)
                         )
                 ), 0).label('total_pending_earning'),
-                db.func.coalesce(
-                    db.func.sum(
-                        db.case(
-                            (Booking.status.in_([BookingStatusEnum.ACTIVE.value, BookingStatusEnum.COMPLETE.value]), CustomerPayment.service_fee)
-                        )
-                ), 0).label('total_pending_earning_service_fee'),
                 db.func.coalesce(
                     db.func.round(
                         db.func.avg(
@@ -98,7 +84,6 @@ def dashboard(prov_id):
             .first()
         )
 
-        print(prov_stats)
 
         active_bookings = (
             db.session.query(
@@ -153,8 +138,6 @@ def get_service(prov_id, service_id):
             .first()
         )
 
-        # bookings = service.bookings.filter(Booking.status.isnot(BookingStatusEnum.PENDING.value)).all()
-        
         bookings = (
             db.session.query(
                 Booking,
@@ -170,8 +153,6 @@ def get_service(prov_id, service_id):
             .all()
             # .paginate(page=page, per_page=per_page, error_out=False)
         )
-
-        print(bookings)
 
         if service is None:
             raise NotFound('No such service found')
@@ -397,7 +378,7 @@ def handle_booking(prov_id, booking_id):
                 booking.status = BookingStatusEnum.CLOSE.value
                 booking.closed_date = datetime.today()
 
-                provider.wallet += booking.payment.calculate_provider_amount()
+                provider.wallet += booking.payment.final_provider_amount
                 flash('booking closed', category='success')
             else:
                 flash('customer has not closed booking', category='error')
@@ -464,6 +445,7 @@ def get_all_payments(prov_id):
                 Service.provider_id.is_(prov_id),
                 CustomerPayment.status.is_(CustomerPaymentStatusEnum.PAID.value)
             )
+            .order_by(CustomerPayment.created_at.desc())
             .paginate(page=page, per_page=per_page, error_out=False)
         )
 

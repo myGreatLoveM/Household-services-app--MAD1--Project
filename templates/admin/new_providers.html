@@ -39,7 +39,7 @@
     </div>
 </div>
 
-{% if new_providers %}
+{% if new_providers.items %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
   <table class="min-w-full bg-white text-sm">
     <thead class="text-left bg-gray-50 uppercase">
@@ -55,7 +55,7 @@
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-      {% for provider, category_name, location in new_providers %}
+      {% for provider, category_name, location in new_providers.items %}
         <tr class="odd:bg-white even:bg-gray-50 text-center">
           <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ provider.username }}</td>
           <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ category_name }}</td>

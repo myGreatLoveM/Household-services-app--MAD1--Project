@@ -25,25 +25,6 @@
               New Providers
             </a>
         </button>
-        <div class="relative inline-block text-left">
-            <button id="dropdownButton" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="true" aria-haspopup="true">
-                Filter by type
-                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.69l3.71-4.46a.75.75 0 011.08-1.04l-4.25 5.12a.75.75 0 01-1.08 0L5.23 7.21a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-                </svg>
-            </button>
-
-            <!-- Dropdown menu, show/hide based on menu state. -->
-            <div id="dropdownMenu" class="z-10 hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
-                <div class="py-1" role="none">
-                    <!-- Active: "bg-gray-100", Not Active: "" -->
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">All</a>
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Pending Payment</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Processed</a>
-                    <a href="#"  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem">Reviewed</a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -55,23 +36,23 @@
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Prov ID</th>
         <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Username</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Category</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Earning</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Services</th>
-        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">#Active Bookings</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Active Services</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Active Bookings</th>
+        <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Lifetime Earning</th>
         <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
         <th scope="col"  class="px-4 py-2">Action</th>
       </tr>
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-        {% for provider, active_services, active_bookings in providers  %}
+        {% for provider in providers.items  %}
         <tr class="odd:bg-white even:bg-gray-50 text-center">
             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ provider.id }}</td>
             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ provider.username }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.category.name }}</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.wallet }}</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ active_services }}</td>
-            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ active_bookings }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.total_active_services }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.total_active_bookings }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.lifetime_earning }} ₹</td>
             <td class="whitespace-nowrap px-4 py-2 text-gray-700">
                 {% if provider.is_blocked %}
                     <span class="whitespace-nowrap rounded-full border border-red-500 px-2.5 py-0.5 text-sm text-red-700 bg-red-100">
@@ -113,17 +94,20 @@
 </div>
 
 
+{% if providers.total > providers.per_page %}
 <div class="w-full border-t border-gray-300 mt-5">
   <div class="mt-2 flex items-center justify-between">
     <div>
-      <p>showing results</p>
+      <p>
+         showing <strong>{{ providers.first }}</strong> to <strong>{{ providers.last }}</strong> of <strong>{{ providers.total }}</strong> results
+      </p>
     </div>
     <div class="space-x-2">
         <button
         type="button"
         class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
         >
-            <a href="#">
+            <a href="{{ url_for('admin.get_all_providers', page=providers.prev_num ) }}">
                 ← Previous
             </a>
         </button>
@@ -131,14 +115,14 @@
         type="button"
         class="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
         >
-            <a href="#">
+            <a href="{{ url_for('admin.get_all_providers', page=providers.next_num ) }}">
                 Next →
             </a>
         </button>
     </div>
   </div>
 </div>
-
+{% endif %}
 </section>
 
 {% endblock section %}

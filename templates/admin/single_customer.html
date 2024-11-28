@@ -9,22 +9,21 @@
 
 <section class="mx-auto w-full max-w-7xl px-4 py-4">
 
-    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 ">
+<div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 ">
   <!-- Profile Header -->
   <div class="flex items-center justify-between pb-4 border-b">
     <div class="flex items-center space-x-4">
-      <img src="https://via.placeholder.com/150" alt="User Avatar" class="w-24 h-24 rounded-full object-cover">
+      <img src="{{ customer.user.profile.avatar }}" alt="User Avatar" class="w-24 h-24 rounded-full object-cover">
       <div>
-        <h2 class="text-2xl font-semibold">John Doe</h2>
-        <p class="text-gray-500">@johndoe</p>
+        <h2 class="text-2xl font-semibold">{{ customer.full_name }}</h2>
+        <p class="text-gray-500">@{{ customer.username }}</p>
         <div class="flex space-x-2 mt-2">
-          <span class="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">Provider</span>
           <span class="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Customer</span>
         </div>
       </div>
     </div>
     <div class="text-right text-gray-500">
-      <p>Joined: <span class="font-medium">January 2023</span></p>
+      <p>Joined: <span class="font-medium">{{ customer.created_at.strftime('%b, %d-%Y') }}</span></p>
       <p>Subscription: <span class="font-medium text-green-600">Premium Plan</span></p>
     </div>
   </div>
@@ -32,138 +31,139 @@
   <!-- Contact and Profile Info -->
   <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <h3 class="text-xl font-semibold mb-2">Contact Information</h3>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Email:</span> johndoe@example.com</p>
-        <p><span class="font-medium">Phone:</span> +1 234 567 890</p>
-        <p><span class="font-medium">Location:</span> New York, USA</p>
+      <h3 class="text-xl font-semibold mb-2">Profile Information</h3>
+      <div class="bg-gray-50 p-4 rounded-lg space-y-1">
+        <p><span class="font-medium">Email:</span> {{ customer.user.profile.email }} </p>
+        <p><span class="font-medium">Phone:</span> +91 {{ customer.user.profile.contact }}</p>
+        <p><span class="font-medium">Gender:</span> {{ customer.user.profile.gender }}</p>
+        <p><span class="font-medium">Location:</span> {{ customer.user.profile.location }}</p>
       </div>
     </div>
 
     <div>
-      <h3 class="text-xl font-semibold mb-2">Profile Information</h3>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Gender:</span> Male</p>
-        <p><span class="font-medium">Age:</span> 32</p>
-        <p><span class="font-medium">Bio:</span> Skilled in plumbing, electrical, and general household repairs.</p>
+      <h3 class="text-xl font-semibold mb-2">Customer Stats</h3>
+      <div class="bg-gray-50 p-4 rounded-lg space-y-1">
+        <p><span class="font-medium">Active Bookings:</span> <span >{{ cust_stats[0]}}</span>  </p>
+        <p><span class="font-medium">Completed Bookings:</span> <span>{{ cust_stats[1]}}</span> </p>
+        <p><span class="font-medium">Total Bookings:</span> <span>{{ cust_stats[2]}}</span> </p>
+        <p><span class="font-medium">Lifetime Spent:</span> <span class="text-blue-400 font-medium">{{ cust_stats[3]}} ₹</span> </p>
       </div>
     </div>
   </div>
 
-  <!-- Services Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Services Provided</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <h4 class="text-lg font-semibold">Plumbing Services</h4>
-        <p><span class="font-medium">Rate:</span> $50/hour</p>
-        <p><span class="font-medium">Experience:</span> 5 years</p>
-        <p><span class="font-medium">Category:</span> Home Maintenance</p>
-        <p><span class="font-medium">Description:</span> Offering comprehensive plumbing solutions for homes.</p>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <h4 class="text-lg font-semibold">Electrical Services</h4>
-        <p><span class="font-medium">Rate:</span> $60/hour</p>
-        <p><span class="font-medium">Experience:</span> 3 years</p>
-        <p><span class="font-medium">Category:</span> Electrical Work</p>
-        <p><span class="font-medium">Description:</span> Handling electrical repairs and installations efficiently.</p>
-      </div>
-    </div>
-  </div>
+  {% if bookings %}
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
+    <h3 class="text-xl font-semibold mb-3">Booking History</h3>
 
-  <!-- Booking History -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Booking History</h3>
-    <div class="space-y-4">
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Service:</span> Plumbing Services</p>
-        <p><span class="font-medium">Status:</span> Completed</p>
-        <p><span class="font-medium">Date:</span> Sept 12, 2023</p>
-        <p><span class="font-medium">Remarks:</span> Quick and efficient work, very satisfied.</p>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Service:</span> Electrical Services</p>
-        <p><span class="font-medium">Status:</span> Pending</p>
-        <p><span class="font-medium">Date:</span> Oct 5, 2023</p>
-      </div>
-    </div>
-  </div>
+    <table class="min-w-full divide-gray-200 bg-white text-sm">
+      <thead class="text-center bg-gray-50 uppercase">
+        <tr class="">
+          <th scope="col" class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Booking Id</th>
+          <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service</th>
+          <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Category</th>
+          <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Service Price</th>
+          <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Status</th>
+          <th scope="col"  class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Payment Status</th>
+          <th scope="col"  class="px-4 py-2">Action</th>
+        </tr>
+      </thead>
 
-  <!-- Payments Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Payment History</h3>
-    <div class="space-y-4">
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Amount:</span> $150</p>
-        <p><span class="font-medium">Method:</span> Credit Card</p>
-        <p><span class="font-medium">Status:</span> Completed</p>
-        <p><span class="font-medium">Date:</span> Sept 12, 2023</p>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Amount:</span> $180</p>
-        <p><span class="font-medium">Method:</span> PayPal</p>
-        <p><span class="font-medium">Status:</span> Pending</p>
-        <p><span class="font-medium">Date:</span> Oct 5, 2023</p>
-      </div>
-    </div>
+      <tbody class="divide-y divide-gray-200 text-center ">
+          {% for booking, service, payment in bookings  %}
+              <tr class="odd:bg-white even:bg-gray-50">
+                  <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ booking.id }}</td>
+                  <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
+                  <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.category }}</td>
+                  <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.price }} ₹</td>
+                  <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {% if booking.status == booking_status_enum.REJECT.value  %}  
+                          <span
+                          class="whitespace-nowrap rounded-full border border-red-500 px-2.5 py-0.5 text-sm text-red-700"
+                          >
+                          rejected
+                          </span>
+                      {% elif booking.status == booking_status_enum.CONFIRM.value  %}  
+                          <span
+                          class="whitespace-nowrap rounded-full border border-purple-500 px-2.5 py-0.5 text-sm text-purple-700 bg-purple-100"
+                          >
+                          confirmed
+                          </span>
+                      {% elif booking.status == booking_status_enum.ACTIVE.value  %}  
+                          <span
+                          class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700 bg-green-100"
+                          >
+                          active
+                          </span>
+                      {% elif booking.status == booking_status_enum.COMPLETE.value  %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-pink-500 px-2.5 py-0.5 text-sm text-pink-700 bg-pink-100"
+                          >
+                          completed
+                          </span>
+                      {% elif booking.status == booking_status_enum.CLOSE.value  %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-zinc-500 px-2.5 py-0.5 text-sm text-zinc-700 bg-zinc-100"
+                          >
+                          closed
+                          </span>
+                      {% endif %}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {% if payment.status == payment_status_enum.PENDING.value %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-yellow-500 px-2.5 py-0.5 text-sm text-yellow-700"
+                          >
+                          pending
+                          </span>
+                      {% elif payment.status == payment_status_enum.PAID.value %}
+                          <span
+                          class="whitespace-nowrap rounded-full border border-green-500 px-2.5 py-0.5 text-sm text-green-700"
+                          >
+                          paid
+                          </span>
+                      {% else %}
+                          -
+                      {% endif %}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
+                      <a
+                          href="{{ url_for('admin.get_booking', booking_id=booking.id) }}"
+                          class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                      >
+                          View
+                      </a>
+                  </td>
+              </tr>
+          {% endfor %}
+      </tbody>
+    </table>
   </div>
+  {% endif %}
 
-  <!-- Reviews Section -->
+  {% if reviews %}
   <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Customer Reviews</h3>
-    <div class="space-y-4">
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Rating:</span> ⭐⭐⭐⭐⭐</p>
-        <p>"Great service! Very professional and timely."</p>
-        <p class="text-gray-500 text-sm">- Sarah, Sept 2023</p>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <p><span class="font-medium">Rating:</span> ⭐⭐⭐⭐</p>
-        <p>"Good service, but communication could be improved."</p>
-        <p class="text-gray-500 text-sm">- Mark, Aug 2023</p>
-      </div>
-    </div>
-  </div>
+    <h3 class="text-xl font-semibold mb-4">Reviews</h3>
+    <div class="space-y-1">
+      {% for review in reviews %}
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="flex justify-between">
+            <p>{{ review.comment }}</p>
+            <p>
+              {% for _ in range(review.rating)  %}
+                ⭐
+              {% endfor %}
+            </p>
+          </div>
+          <div class="flex justify-between">
+            <p class="text-gray-500 text-sm">{{ review.created_at.strftime('%b, %d-%Y') }}</p>
 
-  <!-- Promotions & Discounts Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Active Promotions</h3>
-    <div class="space-y-4">
-      <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
-        <h4 class="text-lg font-semibold">20% off on Plumbing Services</h4>
-        <p>Valid until: Dec 31, 2023</p>
-      </div>
-      <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
-        <h4 class="text-lg font-semibold">Free Electrical Consultation</h4>
-        <p>Valid until: Nov 30, 2023</p>
-      </div>
+            <p>Booking id: {{ review.booking.id }}</p>
+          </div>
+        </div>
+      {% endfor %}
     </div>
   </div>
-
-  <!-- Advertisements Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Advertisements</h3>
-    <div class="space-y-4">
-      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-        <h4 class="text-lg font-semibold">Featured Plumbing Service</h4>
-        <p>Running from: Oct 1, 2023 - Oct 31, 2023</p>
-      </div>
-      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-        <h4 class="text-lg font-semibold">Promoted Electrical Maintenance</h4>
-        <p>Running from: Nov 1, 2023 - Nov 30, 2023</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Subscription Plan Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-semibold mb-4">Subscription Plan</h3>
-    <div class="bg-green-50 p-4 rounded-lg">
-      <p><span class="font-medium">Current Plan:</span> Premium Plan</p>
-      <p><span class="font-medium">Benefits:</span> No commission fee, priority listing, free advertisements, exclusive discounts.</p>
-      <p><span class="font-medium">Valid Until:</span> Jan 1, 2024</p>
-    </div>
-  </div>
+  {% endif %}
 </div>
 
 
