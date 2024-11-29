@@ -53,7 +53,6 @@ class Provider(db.Model):
             .filter(Provider.id.is_(self.id))
             .scalar()
         )
-    
 
     @hybrid_property
     def avg_rating(self):
@@ -68,9 +67,6 @@ class Provider(db.Model):
             .filter(Provider.id.is_(self.id))
             .scalar()
         )
-    
-    
-
 
     @hybrid_property
     def no_of_reviews(self):
@@ -203,12 +199,11 @@ class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     is_approved = db.Column(db.Boolean, default=False)
     is_blocked = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=False)
     provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     time_required_hr = db.Column(db.Integer, nullable=False)
-    visibility = db.Column(db.String(20), default='normal')  # 'normal', 'featured'
     availability = db.Column(db.String(50), default=ProviderAvailabilityEnum.ALL_TIME.value)  # e.g., 'Weekdays', 'Weekends', '24/7'
     description = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.now)

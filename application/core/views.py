@@ -64,7 +64,6 @@ def get_single_category(cat_id):
         if category is None:
             raise NotFound('No category found')
     except SQLAlchemyError as e:
-        print(e)
         raise InternalServerError()
     return render_template('core/single_category.html', category=category)
 

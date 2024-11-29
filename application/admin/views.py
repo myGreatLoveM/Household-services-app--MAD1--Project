@@ -316,6 +316,7 @@ def handle_service(service_id):
         if service:
             if status == ServiceStatusEnum.APPROVE.value:
                 service.is_approved = True
+                service.is_active = True
                 service.approved_at = datetime.today()
                 flash(f'{service.title} is approved')
             elif status == ServiceStatusEnum.BLOCK.value:
