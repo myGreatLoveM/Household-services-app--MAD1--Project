@@ -37,7 +37,7 @@ def create_app(config_obj: Config) -> Flask:
     from application.providers import provider as provider_blueprint
     app.register_blueprint(provider_blueprint, url_prefix='/providers/<int:prov_id>')
 
-    from application.apis import bp as api_blueprint
+    from application.apis import api_bp as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
     return app

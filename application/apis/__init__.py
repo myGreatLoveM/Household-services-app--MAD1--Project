@@ -2,18 +2,16 @@ from flask import Blueprint
 from flask_restful import Api
 
 
-bp = Blueprint('api', __name__)
+api_bp = Blueprint('api_bp', __name__)
+
+api = Api(api_bp)
+
+from .resources import CategoryAPI, CategoryListAPI, CustomerBookingAPI, CustomerBookingListAPI, ProviderServiceAPI, ProviderServiceListAPI
 
 
-
-@bp.errorhandler(409)
-def conflict(error):
-    return {'msg': 'nlsknlsknbs'}, 409
-
-@bp.app_errorhandler(500)
-def internal(error):
-    print('dnknkbnksnb')
-    return {'msg': 'nlsknlsknbs'}, 500
-
-
-from .apis import api
+api.add_resource(CategoryListAPI, '/categories')
+api.add_resource(CategoryAPI, '/categories/<int:cat_id>')
+api.add_resource(ProviderServiceListAPI, '/providers/<int:prov_id>/services')
+api.add_resource(ProviderServiceAPI, '/providers/<int:prov_id>/services/<int:service_id>')
+api.add_resource(CustomerBookingListAPI, '/customers/<int:cust_id>/bookings')
+api.add_resource(CustomerBookingAPI, '/customers/<int:cust_id>/bookings/<int:booking_id>')

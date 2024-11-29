@@ -82,6 +82,7 @@ def get_all_listed_services():
                 Service, Provider, Profile
             )
             .outerjoin(Provider, Service.provider)
+            .outerjoin(Category, Provider.category)
             .join(User, Provider.user)
             .join(Profile, User.profile)
             .filter(
@@ -106,7 +107,7 @@ def get_all_listed_services():
             max_price = request.form.get('max_price', type=int)
     
             search_by = request.form.get('search_by', None)
-            print(search_by)
+
             if selected_categories:
                 active_services_q = active_services_q.join(Category, Provider.category).filter(Category.name.in_(selected_categories))
 
@@ -119,11 +120,12 @@ def get_all_listed_services():
                 active_services_q = active_services_q.filter(
                     User.username.like(f'%{search_by}%') | 
                     Profile.location.like(f'%{search_by}%') | 
-                    Profile.full_name.like(f'%{search_by}%') 
+                    Profile.full_name.like(f'%{search_by}%') |
+                    Service.title.like(f'%{search_by}%') |
+                    Category.name.like(f'%{search_by}%') 
                 )
 
         services = active_services_q.paginate(page=page, per_page=per_page, error_out=False)
-
     except SQLAlchemyError as e:
         raise InternalServerError()
     return render_template('core/all_services.html', services=services, categories=categories)
