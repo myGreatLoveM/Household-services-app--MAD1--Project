@@ -11,24 +11,16 @@ from application.providers.models import Provider
 from application.core.enums import UserRoleEnum
 
 
-@auth.before_app_request
+@auth.before_request
 def before_request():
     if request.endpoint in ['auth.login', 'auth.register']:
-        print("Before auth")
-        print(current_user.is_authenticated)
         if current_user.is_authenticated:
-            print('authenticated user')
             if current_user.is_admin:
-                print('admin user')
                 return redirect(url_for('admin.dashboard'))
             elif current_user.is_provider:
-                print('provider user')
                 return redirect(url_for('provider.dashboard', prov_id=current_user.provider.id))
             elif current_user.is_customer:
-                print('customer user')
                 return redirect(url_for('customer.dashboard', cust_id=current_user.customer.id))
-        
-
 
 
 @auth.route('/login', methods=['GET', 'POST'])
