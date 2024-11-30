@@ -43,18 +43,18 @@
     </thead>
 
     <tbody class="divide-y divide-gray-200">
-        {% for payment in payments.items %}
+        {% for payment, booking, service, provider in payments.items %}
             <tr class="odd:bg-white even:bg-gray-50 text-center">
                 <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{ payment.id }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.id }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.title }}</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.service.provider.username }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.id }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ service.title }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ provider.username }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.calculate_final_amount() }} ₹</td>
-                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.booking.book_date.date() }}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ booking.book_date.date() }}</td>
                 <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ payment.updated_at.date() }}</td>
                 <td class="whitespace-nowrap px-4 py-2 flex justify-center gap-3">
                     <a
-                        href="#"
+                        href="{{ url_for('customer.get_single_booking', cust_id=cust_id, booking_id=booking.id) }}"
                         class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
                     >
                         Detail

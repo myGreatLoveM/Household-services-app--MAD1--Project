@@ -279,10 +279,14 @@ def get_all_payments(cust_id):
     try:
         payments = (
             db.session.query(
-                CustomerPayment
+                CustomerPayment,
+                Booking,
+                Service,
+                Provider
             )
             .join(Booking, CustomerPayment.booking)
-            .join(Customer, Booking.customer)
+            .join(Service, Booking.service)
+            .join(Provider, Service.provider)
             .filter(
                 Customer.id==cust_id, 
                 CustomerPayment.status.notin_([CustomerPaymentStatusEnum.PENDING.value])
